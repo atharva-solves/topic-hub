@@ -18,6 +18,8 @@ class MyApp extends StatelessWidget {
 
 
 
+
+//API RESPONSE Inspecting
 /* 
 class ApiTestView extends StatefulWidget {
   const ApiTestView({super.key});
