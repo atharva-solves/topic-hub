@@ -22,21 +22,24 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
 
       final responseData = await _dioClient.get(ApiEndpoints.parentCategories);
 
+      print(
+        'Raw response came .rawResponse type : ${responseData.runtimeType}',
+      );
+
+      //bcz we already tested in main
       final List<dynamic> rawList = responseData as List<dynamic>;
 
-      print('Raw response came .rawList type : ${responseData.runtimeType}');
-
-      final List<CategoryModel> listOfCategoryModel = rawList
+      final List<CategoryModel> listParentCatrgories = rawList
           .map((json) => CategoryModel.fromJson(json))
           .toList();
 
       print(
-        'raw list convertend to Model list : ${listOfCategoryModel.runtimeType}',
+        'raw list convertend to Model list : ${listParentCatrgories.runtimeType}',
       );
       print('====== Topichub Remote DS Ends ======');
-      return listOfCategoryModel;
+      return listParentCatrgories;
     } catch (error) {
-      print('Error Catched in RemoteDS get : $error');
+      print('Error Catched in TopichubRemoteDS getParent() : $error');
       print('===== Remote DS END =====');
       rethrow;
     }

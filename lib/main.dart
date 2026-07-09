@@ -46,7 +46,7 @@ class _ApiTestViewState extends State<ApiTestView> {
       print('Response Type : ${rawData.runtimeType}');
       print('Data body in rawData response : $rawData');
 
-      setState(() {
+      setState(() { 
         consoleStatus = "API fetch and Test Successful .See Trminal of VS code";
       });
     } catch (error) {
