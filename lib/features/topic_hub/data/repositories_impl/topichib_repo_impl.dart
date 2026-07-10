@@ -2,6 +2,12 @@ import 'package:getx_memo_app/features/topic_hub/data/data_models/category_model
 import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
 
+//1.data source management (what if no internet ,fetch from LDS)
+//  LDS caching (after fetching from API , cache it save it locally safe side)
+
+//2.technical error handling (dio/http if canged in future)
+//3.Database combined task. (fetch from API,compare locally saved fav flags, isFav=true for that id)
+
 class TopichibRepoImpl implements TopichubRepo {
   //Dec,Constr init list,meth with trycatch
 
