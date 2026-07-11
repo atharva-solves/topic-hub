@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:getx_memo_app/core/network/api_endpoints.dart';
 import 'package:getx_memo_app/core/network/dio_client.dart';
+import 'package:getx_memo_app/core/routes/app_pages.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +14,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(title: 'Memo App Test');
+    return GetMaterialApp(
+      title: 'TopicHub App',
+      initialRoute: AppRoutes.topichub,
+      getPages: AppPages.pages,
+    );
   }
 }
 

@@ -26,6 +26,8 @@ import 'package:getx_memo_app/features/topic_hub/presentation/controllers/topich
 class TopichubBinding extends Bindings {
   @override
   void dependencies() {
+
+    print('===== Topichub Dep Inj with binding started =====');
     Get.lazyPut<DioClient>(() => DioClient());
 
     Get.lazyPut<TopichubRemoteDataSource>(
@@ -43,5 +45,8 @@ class TopichubBinding extends Bindings {
     Get.lazyPut<TopichubController>(
       () => TopichubController(getParentCategoriesUsecase: Get.find()),
     );
+
+    
+    print('===== Topichub Dep Inj with binding END =====');
   }
 }

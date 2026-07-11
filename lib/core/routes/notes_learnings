@@ -1,0 +1,6 @@
+step 9: Nav,Rout,test
+
+
+what : attach route (name) - View - Binding together.
+why: Inform flutter when to execute Binding (user nav to which route), 
+     and delete Binding (User Leave)
