@@ -20,9 +20,9 @@ class TopichubController extends GetxController {
 
   final GetParentCategoriesUsecase _getParentCategoriesUsecase;
 
-  var isLoading = false.obs;
-  var parentCategories = <ParentCategoryModel>[].obs;
-  var errorMessage = ''.obs;
+  final isLoading = false.obs;
+  final parentCategories = <ParentCategoryModel>[].obs;
+  final errorMessage = ''.obs;
 
   TopichubController({
     required GetParentCategoriesUsecase getParentCategoriesUsecase,

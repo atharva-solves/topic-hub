@@ -46,11 +46,11 @@ class TopichibRepoImpl implements TopichubRepo {
   @override
   Future<List<SubCategoryEntity>> getSubCategories(int parentId) async {
     try {
-      final List<SubCategoryModel> subCategories =
+      final List<SubCategoryEntity> subCategories =
           await _topichubRemoteDataSource.getSubCategories(parentId);
       return subCategories;
-    } catch (error){
+    } catch (error) {
       rethrow;
-    } 
+    }
   }
 }

@@ -3,11 +3,12 @@ import 'package:getx_memo_app/core/network/api_endpoints.dart';
 import 'package:getx_memo_app/core/network/dio_client.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
 
 //abstract to future proof swaping for test cases
 abstract class TopichubRemoteDataSource {
   Future<List<ParentCategoryModel>> getParentCategories();
-  Future<List<SubCategoryModel>> getSubCategories(int parentId);
+  Future<List<SubCategoryEntity>> getSubCategories(int parentId);
 }
 
 class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
@@ -56,7 +57,7 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
 
   //SubCategories
   @override
-  Future<List<SubCategoryModel>> getSubCategories(int parentId) async {
+  Future<List<SubCategoryEntity>> getSubCategories(int parentId) async {
     try {
       final responseData = await _dioClient.get(
         ApiEndpoints.subCategories,
@@ -65,7 +66,7 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
 
       final List<dynamic> rawList = responseData as List<dynamic>;
 
-      final List<SubCategoryModel> subCategories = rawList
+      final List<SubCategoryEntity> subCategories = rawList
           .map((json) => SubCategoryModel.fromJson(json))
           .toList();
 
