@@ -1,20 +1,26 @@
-
 class CategoryModel {
   // We use String? (nullable) because sometimes APIs return null for missing images.
-  final String? id;
+
+  //mock data processing error for RDS
+  final int? id;
+  //final String id;
   final String? catName;
   final String? catImage;
   final String? thumbImage;
 
   CategoryModel({this.id, this.catName, this.catImage, this.thumbImage});
 
-//String keys of json(map) matches test's print .
+  //String keys of json(map) matches test's print .
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
       // The API sends the ID as an integer (e.g., '1'), but our model expects a String.
       // Calling .toString() prevents type crash errors.
-      id: json['id']?.toString(),
+
+      //mock data processing error for RDS
+      id: json['id'],
+
+      // id: json['id']?.toString(),
       catName: json['cat_name'],
       catImage: json['cat_image'],
       thumbImage: json['thumb_image'],

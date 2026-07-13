@@ -1,3 +1,4 @@
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/core/network/api_endpoints.dart';
 import 'package:getx_memo_app/core/network/dio_client.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/category_model.dart';
@@ -20,6 +21,10 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       print('====== Topic Hub RemoteDS starts =====  ');
       print('Fetching data from DIO client');
 
+      //mocking to test custom 404 err
+      //final responseData = await _dioClient.get('fake end point to test custom 404 error');
+
+
       final responseData = await _dioClient.get(ApiEndpoints.parentCategories);
 
       print(
@@ -38,10 +43,13 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       );
       print('====== Topichub Remote DS Ends ======');
       return listParentCatrgories;
-    } catch (error) {
+    } on AppException catch (error) {
       print('Error Catched in TopichubRemoteDS getParent() : $error');
       print('===== Remote DS END =====');
       rethrow;
+    } catch (error) {
+      print("Generic data processing err > ${error.toString()}");
+      throw FetchDataException(message: 'Data processing error');
     }
   }
 }

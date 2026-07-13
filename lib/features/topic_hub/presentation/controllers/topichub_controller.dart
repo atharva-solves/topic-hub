@@ -1,4 +1,6 @@
+import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
 
@@ -53,8 +55,18 @@ class TopichubController extends GetxController {
       print(
         'parent categories fetch succefully : length :${parentCategories.length} , type : ${parentCategories.runtimeType}',
       );
+    } on AppException catch (customError) {
+      print('parent Ctr>custom err caught : $customError');
+
+      errorMessage.value = customError.toString();
+
+      Get.snackbar(
+        customError.prefix, //title
+        customError.exceptionMessage, //msg
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (error) {
-      print('Error caught by ctr>fetchParCat :$error');
+      print('Ctr->FallBack Catch for generic Dart/Logic err :$error');
       errorMessage.value = error.toString();
     } finally {
       isLoading.value = false;

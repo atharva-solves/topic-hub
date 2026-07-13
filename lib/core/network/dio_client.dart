@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:getx_memo_app/core/errors/api_error_handler.dart';
 import 'package:getx_memo_app/core/network/api_endpoints.dart';
 
 class DioClient {
@@ -11,6 +12,9 @@ class DioClient {
     : _dio = Dio(
         BaseOptions(
           baseUrl: ApiEndpoints.baseUrl,
+
+          //mock custom timeout err
+          //connectTimeout: const Duration(milliseconds: 1),
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 15),
           responseType: ResponseType.json,
@@ -40,33 +44,21 @@ class DioClient {
       //Debug Resp
       print('Status code : ${response.statusCode}');
 
-      if (response.statusCode == 200) {
-        //STORE response came from server
-        var finalData = response.data;
+      //STORE response came from server
+      var finalData = response.data;
 
-        //Double Deserialization
-        if (finalData is String) {
-          print(
-            'Debug: Caught Double serialized json String.now parsing it manually',
-          );
-          finalData = jsonDecode(finalData);
-        }
-
-        print('API REQUEST DONE');
-        print('================');
-
-        return finalData;
-      } else {
-        //for HTTP errors , talk established with the server.Server responded failure
-
-        print(' API GET REQUEST FAILED (Status: ${response.statusCode})');
-        print('========================================');
-
-        //throw general error as of now .Proper Error handler will handle it
-        throw Exception(
-          'Server responded with status code : ${response.statusCode}',
+      //Double Deserialization
+      if (finalData is String) {
+        print(
+          'Debug: Caught Double serialized json String.now parsing it manually',
         );
+        finalData = jsonDecode(finalData);
       }
+
+      print('API REQUEST DONE');
+      print('================');
+
+      return finalData;
     } catch (error) {
       //cannot even reach the server in the first place.
       //catch dio / Internet errors
@@ -75,8 +67,9 @@ class DioClient {
       print('Details:$error');
       print('==============');
 
-      //pass error up the cain to show in UI
-      rethrow;
+      //thorw : pass MODIFIED error to Translator(API ER HAN) .
+      //(not rethrow ! it'll pass raw)
+      throw ApiErrorHandler.handleError(error);
     }
   }
 }
