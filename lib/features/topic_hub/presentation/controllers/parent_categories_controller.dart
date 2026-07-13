@@ -52,9 +52,9 @@ class ParentCategoriesController extends GetxController {
 
       parentCategories.assignAll(result);
 
-      print(
+      /* print(
         'parent categories fetch succefully : length :${parentCategories.length} , type : ${parentCategories.runtimeType}',
-      );
+      ); */
     } on AppException catch (customError) {
       print('parent Ctr>custom err caught : $customError');
 

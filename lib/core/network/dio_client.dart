@@ -54,7 +54,7 @@ class DioClient {
         );
         finalData = jsonDecode(finalData);
       }
-
+    
       print('API REQUEST DONE');
       print('================');
 

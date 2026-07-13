@@ -6,7 +6,7 @@ class GetSubCategoriesUsecase {
   GetSubCategoriesUsecase({required TopichubRepo topichubRepo})
     : _topichubRepo = topichubRepo;
 
-  Future<List<SubCategoryEntity>> execute(int parentId) async {
+  Future<List<SubCategoryEntity>> execute(String parentId) async {
     try {
       return await _topichubRepo.getSubCategories(parentId);
     } catch (error) {

@@ -23,7 +23,7 @@ import 'package:getx_memo_app/features/topic_hub/presentation/controllers/parent
 
 //lazyPut --> init only when screen is actually opened
 
-class ParentCategoriesBinding extends Bindings {
+class ParentCategoriesBindin extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<TopichubRemoteDataSource>(

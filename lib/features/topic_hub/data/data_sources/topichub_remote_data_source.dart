@@ -8,7 +8,7 @@ import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_en
 //abstract to future proof swaping for test cases
 abstract class TopichubRemoteDataSource {
   Future<List<ParentCategoryModel>> getParentCategories();
-  Future<List<SubCategoryEntity>> getSubCategories(int parentId);
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId);
 }
 
 class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
@@ -57,23 +57,26 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
 
   //SubCategories
   @override
-  Future<List<SubCategoryEntity>> getSubCategories(int parentId) async {
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId) async {
     try {
       final responseData = await _dioClient.get(
         ApiEndpoints.subCategories,
+
         queryParameters: {'parent_id': parentId},
       );
 
       final List<dynamic> rawList = responseData as List<dynamic>;
 
-      final List<SubCategoryEntity> subCategories = rawList
-          .map((json) => SubCategoryModel.fromJson(json))
-          .toList();
+      final List<SubCategoryEntity> subCategories = rawList.map((json) {
+        print('-__-__-__ SubCategory API sent map>psrid>type > ${json}');
+        return SubCategoryModel.fromJson(json);
+      }).toList();
 
       return subCategories;
     } on AppException {
       rethrow;
     } catch (e) {
+      print('-_-_-_ E R R O R TopicHub>RDS>getSubCat $e');
       throw FetchDataException(message: 'Data processing error');
     }
   }

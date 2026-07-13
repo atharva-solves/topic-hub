@@ -44,7 +44,7 @@ class TopichibRepoImpl implements TopichubRepo {
   }
 
   @override
-  Future<List<SubCategoryEntity>> getSubCategories(int parentId) async {
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId) async {
     try {
       final List<SubCategoryEntity> subCategories =
           await _topichubRemoteDataSource.getSubCategories(parentId);

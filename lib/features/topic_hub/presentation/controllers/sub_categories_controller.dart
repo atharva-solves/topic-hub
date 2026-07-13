@@ -11,27 +11,34 @@ class SubCategoriesController extends GetxController {
   final RxList<SubCategoryEntity> subCategories = <SubCategoryEntity>[].obs;
 
   final GetSubCategoriesUsecase _getSubCategoriesUsecase;
-  
+
   SubCategoriesController({
     required GetSubCategoriesUsecase getSubCategoriesUsecase,
   }) : _getSubCategoriesUsecase = getSubCategoriesUsecase;
 
-  Future<void> getSubCategories(int parentId) async {
+  Future<void> getSubCategories(String parentId) async {
     try {
       print('Sub category Ctrl started');
       isLoading.value = true;
       errorMessage.value = '';
-      
-      List<SubCategoryEntity> fetchedData = await _getSubCategoriesUsecase.execute(parentId);
+
+      List<SubCategoryEntity> fetchedData = await _getSubCategoriesUsecase
+          .execute(parentId);
+
+      print(
+        'ctr fetched list of ${subCategories.runtimeType} length ${subCategories.length}',
+      );
       subCategories.assignAll(fetchedData);
-      
     } on AppException catch (customException) {
       // Assuming you have a specific message property in your AppException
-      errorMessage.value = customException.toString(); // Swap this if you have a .message getter!
+
+      print('error in sub cat ctr > ${customException.toString()}');
+      errorMessage.value = customException
+          .toString(); // Swap this if you have a .message getter!
     } catch (localError) {
+      print('subCat ctrl catch local err $localError ');
       errorMessage.value = 'Unexpected local error: $localError';
     } finally {
-      
       print('Sub category Ctrl started');
       isLoading.value = false;
     }

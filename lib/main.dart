@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'TopicHub App',
-      initialRoute: AppRoutes.topichub,
+      initialRoute: AppRoutes.parentCategories,
       initialBinding: InitialBindings(),
       getPages: AppPages.pages,
     );

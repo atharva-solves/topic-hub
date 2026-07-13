@@ -2,8 +2,8 @@ class ParentCategoryModel {
   // We use String? (nullable) because sometimes APIs return null for missing images.
 
   //mock data processing error for RDS
-  final int? id;
-  //final String id;
+  //final int? id;
+  final String? id;
   final String? catName;
   final String? catImage;
   final String? thumbImage;

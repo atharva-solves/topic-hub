@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/sub_categories_arguments.dart';
 import '../controllers/parent_categories_controller.dart';
 
 class ParentCategoriesView extends GetView<ParentCategoriesController> {
@@ -58,13 +60,21 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
           separatorBuilder: (context, index) => const SizedBox(height: 16),
 
           itemBuilder: (context, index) {
-            final category = controller.parentCategories[index];
+            final parentCategory = controller.parentCategories[index];
 
             // InkWell gives us that nice ripple animation when the user taps
             return InkWell(
               onTap: () {
-                print('Navigating to SubCategories for: ${category.id}');
-                // We will add Get.toNamed() here later
+                print('Navigating to SubCategories for: ${parentCategory.id}');
+
+                Get.toNamed(
+                  AppRoutes.subCategories,
+                  arguments: SubCategoriesArgs(
+                    parentId: parentCategory.id!,
+                    parentTitle: parentCategory.catName!,
+                    parentImage: parentCategory.catImage!,
+                  ),
+                );
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
@@ -80,7 +90,7 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        category.catImage ?? '',
+                        parentCategory.catImage ?? '',
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
@@ -101,7 +111,7 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
                     // Medium-level widget: Expanded prevents long text from crashing the UI
                     Expanded(
                       child: Text(
-                        category.catName ?? 'Unknown',
+                        parentCategory.catName ?? 'Unknown',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
