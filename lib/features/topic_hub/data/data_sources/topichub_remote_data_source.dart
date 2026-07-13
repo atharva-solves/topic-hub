@@ -1,11 +1,13 @@
 import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/core/network/api_endpoints.dart';
 import 'package:getx_memo_app/core/network/dio_client.dart';
-import 'package:getx_memo_app/features/topic_hub/data/data_models/category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
 
 //abstract to future proof swaping for test cases
 abstract class TopichubRemoteDataSource {
-  Future<List<CategoryModel>> getParentCategories();
+  Future<List<ParentCategoryModel>> getParentCategories();
+  Future<List<SubCategoryModel>> getSubCategories(int parentId);
 }
 
 class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
@@ -16,14 +18,13 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
     : _dioClient = dioClient;
 
   @override
-  Future<List<CategoryModel>> getParentCategories() async {
+  Future<List<ParentCategoryModel>> getParentCategories() async {
     try {
       print('====== Topic Hub RemoteDS starts =====  ');
       print('Fetching data from DIO client');
 
       //mocking to test custom 404 err
       //final responseData = await _dioClient.get('fake end point to test custom 404 error');
-
 
       final responseData = await _dioClient.get(ApiEndpoints.parentCategories);
 
@@ -34,8 +35,8 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       //bcz we already tested in main
       final List<dynamic> rawList = responseData as List<dynamic>;
 
-      final List<CategoryModel> listParentCatrgories = rawList
-          .map((json) => CategoryModel.fromJson(json))
+      final List<ParentCategoryModel> listParentCatrgories = rawList
+          .map((json) => ParentCategoryModel.fromJson(json))
           .toList();
 
       print(
@@ -49,6 +50,29 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       rethrow;
     } catch (error) {
       print("Generic data processing err > ${error.toString()}");
+      throw FetchDataException(message: 'Data processing error');
+    }
+  }
+
+  //SubCategories
+  @override
+  Future<List<SubCategoryModel>> getSubCategories(int parentId) async {
+    try {
+      final responseData = await _dioClient.get(
+        ApiEndpoints.subCategories,
+        queryParameters: {'parent_id': parentId},
+      );
+
+      final List<dynamic> rawList = responseData as List<dynamic>;
+
+      final List<SubCategoryModel> subCategories = rawList
+          .map((json) => SubCategoryModel.fromJson(json))
+          .toList();
+
+      return subCategories;
+    } on AppException {
+      rethrow;
+    } catch (e) {
       throw FetchDataException(message: 'Data processing error');
     }
   }

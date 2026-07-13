@@ -1,5 +1,8 @@
-import 'package:getx_memo_app/features/topic_hub/data/data_models/category_model.dart';
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
 
 //1.data source management (what if no internet ,fetch from LDS)
@@ -17,11 +20,11 @@ class TopichibRepoImpl implements TopichubRepo {
     : _topichubRemoteDataSource = topichubRemoteDataSource;
 
   @override
-  Future<List<CategoryModel>> getParentCategories() async {
+  Future<List<ParentCategoryModel>> getParentCategories() async {
     try {
       print("====== topichub repo imple Starts =======");
 
-      final List<CategoryModel> listParentCategory =
+      final List<ParentCategoryModel> listParentCategory =
           await _topichubRemoteDataSource.getParentCategories();
 
       print(
@@ -38,5 +41,16 @@ class TopichibRepoImpl implements TopichubRepo {
 
       rethrow;
     }
+  }
+
+  @override
+  Future<List<SubCategoryEntity>> getSubCategories(int parentId) async {
+    try {
+      final List<SubCategoryModel> subCategories =
+          await _topichubRemoteDataSource.getSubCategories(parentId);
+      return subCategories;
+    } catch (error){
+      rethrow;
+    } 
   }
 }

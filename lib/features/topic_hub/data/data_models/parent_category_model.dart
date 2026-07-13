@@ -1,4 +1,4 @@
-class CategoryModel {
+class ParentCategoryModel {
   // We use String? (nullable) because sometimes APIs return null for missing images.
 
   //mock data processing error for RDS
@@ -8,12 +8,12 @@ class CategoryModel {
   final String? catImage;
   final String? thumbImage;
 
-  CategoryModel({this.id, this.catName, this.catImage, this.thumbImage});
+  ParentCategoryModel({this.id, this.catName, this.catImage, this.thumbImage});
 
   //String keys of json(map) matches test's print .
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(
+  factory ParentCategoryModel.fromJson(Map<String, dynamic> json) {
+    return ParentCategoryModel(
       // The API sends the ID as an integer (e.g., '1'), but our model expects a String.
       // Calling .toString() prevents type crash errors.
 
