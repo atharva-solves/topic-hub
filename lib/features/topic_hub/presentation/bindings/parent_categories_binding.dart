@@ -23,13 +23,9 @@ import 'package:getx_memo_app/features/topic_hub/presentation/controllers/parent
 
 //lazyPut --> init only when screen is actually opened
 
-class TopichubBinding extends Bindings {
+class ParentCategoriesBinding extends Bindings {
   @override
   void dependencies() {
-
-    print('===== Topichub Dep Inj with binding started =====');
-    Get.lazyPut<DioClient>(() => DioClient());
-
     Get.lazyPut<TopichubRemoteDataSource>(
       () => TopichubRemoteDataSourceImpl(dioClient: Get.find()),
     );
@@ -46,7 +42,6 @@ class TopichubBinding extends Bindings {
       () => ParentCategoriesController(getParentCategoriesUsecase: Get.find()),
     );
 
-    
     print('===== Topichub Dep Inj with binding END =====');
   }
 }

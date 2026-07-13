@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:getx_memo_app/core/bindings/initial_bindings.dart';
 import 'package:getx_memo_app/core/network/api_endpoints.dart';
 import 'package:getx_memo_app/core/network/dio_client.dart';
 import 'package:getx_memo_app/core/routes/app_pages.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'TopicHub App',
       initialRoute: AppRoutes.topichub,
+      initialBinding: InitialBindings(),
       getPages: AppPages.pages,
     );
   }
