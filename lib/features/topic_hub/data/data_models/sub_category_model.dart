@@ -7,6 +7,7 @@ class SubCategoryModel extends SubCategoryEntity {
     required super.id,
 
     required super.title,
+    required super.catImg,
     super.description,
   });
 
@@ -16,6 +17,7 @@ class SubCategoryModel extends SubCategoryEntity {
 
       //API's snake_case --> dart camelCase
       title: json['cat_name'] as String,
+      catImg: json['cat_img'] as String,
       description: json['description'] as String?,
     );
   }

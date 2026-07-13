@@ -68,7 +68,7 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       final List<dynamic> rawList = responseData as List<dynamic>;
 
       final List<SubCategoryEntity> subCategories = rawList.map((json) {
-        print('-__-__-__ SubCategory API sent map>psrid>type > ${json}');
+        print('-__-__-__ SubCategory API sent map>id type > ${json['id'].runtimeType}');
         return SubCategoryModel.fromJson(json);
       }).toList();
 

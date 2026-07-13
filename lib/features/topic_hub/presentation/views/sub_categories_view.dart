@@ -1,96 +1,143 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/instance_manager.dart';
-import 'package:get/route_manager.dart';
-import 'package:getx_memo_app/features/topic_hub/presentation/arguments/sub_categories_arguments.dart';
-import 'package:getx_memo_app/features/topic_hub/presentation/controllers/sub_categories_controller.dart';
+import 'package:get/get.dart';
+import '../controllers/sub_categories_controller.dart';
 
-class SubCategoriesView extends StatefulWidget {
+class SubCategoriesView extends GetView<SubCategoriesController> {
   const SubCategoriesView({super.key});
-
-  @override
-  State<SubCategoriesView> createState() => _SubCategoriesViewState();
-}
-
-class _SubCategoriesViewState extends State<SubCategoriesView> {
-  final SubCategoriesController controller =
-      Get.find<SubCategoriesController>();
-  @override
-  void initState() {
-    super.initState();
-     
-   final SubCategoriesArgs args = Get.arguments as SubCategoriesArgs;
-
-   final String parentId=args.parentId;
-   final String parentTitle=args.parentTitle;
-   final String parentImg=args.parentImage;  
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getSubCategories(parentId);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50], // Consistent modern off-white background
+
       appBar: AppBar(
-        title: const Text('Integration Test Screen'),
-        backgroundColor: Colors.amber, // Make it obvious this is a test screen!
+        // Utilizing the parent arg TITLE fetched by the controller
+        title: Text(
+          controller.parentTitle,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black, // Makes back button and text black
       ),
-      // 4. Wrap the body in Obx to listen to the controller
-      body: Obx(() {
-        // STATE A: Loading
-        if (controller.isLoading.value) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Fetching Sub-Categories...'),
-              ],
-            ),
-          );
-        }
 
-        // STATE B: Error
-        if (controller.errorMessage.isNotEmpty) {
-          return Center(
-            child: Text(
-              'CRASHED!\nError: ${controller.errorMessage.value}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          );
-        }
-
-        // STATE C: Success
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 64),
-              const SizedBox(height: 16),
-              Text(
-                'SUCCESS!\nLoaded ${controller.subCategories.length} items.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
+      body: Column(
+        children: [
+          // 1. THE HERO BANNER: Utilizing the parent arg IMAGE
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20), // Extra rounded for Gen-Z feel
+              child: Image.network(
+                controller.parentImage,
+                width: double.infinity,
+                height: 140,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: double.infinity,
+                  height: 140,
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.image_not_supported, color: Colors.grey),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text('Check your debug console to see the data flow!'),
-            ],
+            ),
           ),
-        );
-      }),
+
+          const SizedBox(height: 8),
+
+          // 2. THE LIST (Reactive)
+          Expanded(
+            child: Obx(() {
+              // STATE A: Loading
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.black),
+                );
+              }
+
+              // STATE B: Error
+              if (controller.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Text(
+                    controller.errorMessage.value,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+
+              // STATE C: Empty
+              if (controller.subCategories.isEmpty) {
+                return const Center(child: Text('No sub-categories found.'));
+              }
+
+              // STATE D: Success
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                itemCount: controller.subCategories.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final subCategory = controller.subCategories[index];
+
+                  return InkWell(
+                    onTap: () {
+                      print('Navigating to Project Details for: ${subCategory.id}');
+                      // Next phase: Navigation to projects!
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.shade200, width: 1.5),
+                      ),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              subCategory.catImg , // Make sure this matches your entity property
+                              width: 60, // Slightly smaller than parent to show hierarchy
+                              height: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                width: 60,
+                                height: 60,
+                                color: Colors.grey[200],
+                                child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              subCategory.title ,// Make sure this matches your entity property
+                              style: const TextStyle(
+                                fontSize: 16, // Slightly smaller font than parent
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
     );
   }
 }

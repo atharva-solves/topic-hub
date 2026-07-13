@@ -8,7 +8,11 @@ class GetSubCategoriesUsecase {
 
   Future<List<SubCategoryEntity>> execute(String parentId) async {
     try {
-      return await _topichubRepo.getSubCategories(parentId);
+      final List<SubCategoryEntity> subCategories = await _topichubRepo
+          .getSubCategories(parentId);
+
+      print('_-__UC list length -->  ${subCategories.length}');
+      return subCategories;
     } catch (error) {
       rethrow;
     }
