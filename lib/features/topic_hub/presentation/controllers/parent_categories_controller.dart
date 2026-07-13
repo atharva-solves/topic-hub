@@ -12,7 +12,7 @@ import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_cate
 //              list=newList ->create new mem loc obj (102 fm) ,But UI would still listening to old (101fm)
 //             therefore .add ,.addAll , .assignAll
 
-class TopichubController extends GetxController {
+class ParentCategoriesController extends GetxController {
   //1 field _usecase obj & var .obs(1.isLoad, 2.list,3.err msg)
   //2 constr with init list
   //3 @override lifecycle methods [onInit()]
@@ -24,7 +24,7 @@ class TopichubController extends GetxController {
   final parentCategories = <ParentCategoryModel>[].obs;
   final errorMessage = ''.obs;
 
-  TopichubController({
+  ParentCategoriesController({
     required GetParentCategoriesUsecase getParentCategoriesUsecase,
   }) : _getParentCategoriesUsecase = getParentCategoriesUsecase;
 

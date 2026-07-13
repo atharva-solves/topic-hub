@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/topichub_controller.dart';
+import '../controllers/parent_categories_controller.dart';
 
-class ParentCategoriesView extends GetView<TopichubController> {
+class ParentCategoriesView extends GetView<ParentCategoriesController> {
   const ParentCategoriesView({super.key});
 
   @override

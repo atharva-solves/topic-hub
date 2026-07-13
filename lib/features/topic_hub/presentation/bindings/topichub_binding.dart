@@ -4,7 +4,7 @@ import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remo
 import 'package:getx_memo_app/features/topic_hub/data/repositories_impl/topichib_repo_impl.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
-import 'package:getx_memo_app/features/topic_hub/presentation/controllers/topichub_controller.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/controllers/parent_categories_controller.dart';
 
 //WHY? :
 //     SoC :
@@ -42,8 +42,8 @@ class TopichubBinding extends Bindings {
       () => GetParentCategoriesUsecase(topichubRepo: Get.find()),
     );
 
-    Get.lazyPut<TopichubController>(
-      () => TopichubController(getParentCategoriesUsecase: Get.find()),
+    Get.lazyPut<ParentCategoriesController>(
+      () => ParentCategoriesController(getParentCategoriesUsecase: Get.find()),
     );
 
     
