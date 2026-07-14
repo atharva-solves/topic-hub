@@ -69,6 +69,7 @@ class ProjectListView extends GetView<ProjectListController> {
                     style: const TextStyle(color: Colors.red),
                   ),
                 );
+                
               }
 
               if (controller.projectList.isEmpty) {
