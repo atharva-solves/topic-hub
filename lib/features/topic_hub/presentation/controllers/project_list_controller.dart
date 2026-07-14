@@ -14,9 +14,8 @@ class ProjectListController extends GetxController {
   late final String subCategoryImage;
   final GetProjectListUsecase _projectListUsecase;
 
-  ProjectListController({
-    required GetProjectListUsecase projectDetailUsecase,
-  }) : _projectListUsecase = projectDetailUsecase;
+  ProjectListController({required GetProjectListUsecase projectDetailUsecase})
+    : _projectListUsecase = projectDetailUsecase;
 
   @override
   void onInit() {
@@ -24,8 +23,8 @@ class ProjectListController extends GetxController {
 
     final ProjectListArgs args = Get.arguments as ProjectListArgs;
     subCategoryId = args.subCategoryId;
-    subCategoryTitle=args.subCategoryTitle;
-    subCategoryImage=args.subCateoryImage;
+    subCategoryTitle = args.subCategoryTitle;
+    subCategoryImage = args.subCateoryImage;
 
     fetchProjectDetail(subCategoryId);
   }
@@ -46,7 +45,11 @@ class ProjectListController extends GetxController {
     } on AppException catch (customException) {
       print('Custom message caught in ProjecDet Ctr');
       errorMessage.value = customException.toString();
-      Get.snackbar(customException.prefix, customException.exceptionMessage);
+      Get.snackbar(
+        customException.prefix,
+        customException.exceptionMessage,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (error) {
       print('local error caught in Proj Det CTR');
       errorMessage.value = 'local error caught in details ctr';
