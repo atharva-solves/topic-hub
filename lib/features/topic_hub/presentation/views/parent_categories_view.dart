@@ -65,14 +65,14 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
             // InkWell gives us that nice ripple animation when the user taps
             return InkWell(
               onTap: () {
-                print('Navigating to SubCategories for: ${parentCategory.id}');
+                print('Navigating to SubCategories for: ${parentCategory.parentId}');
 
                 Get.toNamed(
                   AppRoutes.subCategories,
                   arguments: SubCategoriesArgs(
-                    parentId: parentCategory.id!,
-                    parentTitle: parentCategory.catName!,
-                    parentImage: parentCategory.catImage!,
+                    parentId: parentCategory.parentId!,
+                    parentTitle: parentCategory.parentTitle!,
+                    parentImage: parentCategory.parentImage!,
                   ),
                 );
               },
@@ -90,7 +90,7 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        parentCategory.catImage ?? '',
+                        parentCategory.parentImage ?? '',
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
@@ -111,7 +111,7 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
                     // Medium-level widget: Expanded prevents long text from crashing the UI
                     Expanded(
                       child: Text(
-                        parentCategory.catName ?? 'Unknown',
+                        parentCategory.parentTitle ?? 'Unknown',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,

@@ -4,12 +4,13 @@ import 'package:getx_memo_app/core/network/dio_client.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/project_List_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
 
 //abstract to future proof swaping for test cases
 abstract class TopichubRemoteDataSource {
-  Future<List<ParentCategoryModel>> getParentCategories();
+  Future<List<ParentCategoryEntity>> getParentCategories();
   Future<List<SubCategoryEntity>> getSubCategories(String parentId);
   Future<List<ProjectListEntity>> getProjectLst(String subCategoryId);
 }
@@ -22,7 +23,7 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
     : _dioClient = dioClient;
 
   @override
-  Future<List<ParentCategoryModel>> getParentCategories() async {
+  Future<List<ParentCategoryEntity>> getParentCategories() async {
     try {
       print('====== Topic Hub RemoteDS starts =====  ');
       print('Fetching data from DIO client');
@@ -48,7 +49,7 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       //bcz we already tested in main
       final List<dynamic> rawList = responseData as List<dynamic>;
 
-      final List<ParentCategoryModel> listParentCatrgories = rawList
+      final List<ParentCategoryEntity> listParentCatrgories = rawList
           .map((json) => ParentCategoryModel.fromJson(json))
           .toList();
 

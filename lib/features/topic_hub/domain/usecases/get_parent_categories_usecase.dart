@@ -6,6 +6,7 @@
 //     no need to obj.call(). Directly--> obj(). call get executed.
 
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
 
 class GetParentCategoriesUsecase {
@@ -17,13 +18,13 @@ class GetParentCategoriesUsecase {
     : _topichubRepo = topichubRepo;
 
   //call()
-  Future<List<ParentCategoryModel>> call() async {
+  Future<List<ParentCategoryEntity>> call() async {
     try {
       print('===== Usecase GetParentCat Started =====');
       print('fetching parent list from repo');
 
-      final List<ParentCategoryModel> listParentCategories = await _topichubRepo
-          .getParentCategories();
+      final List<ParentCategoryEntity> listParentCategories =
+          await _topichubRepo.getParentCategories();
 
       print(
         'list fetched : length:${listParentCategories.length} type:${listParentCategories.runtimeType}',

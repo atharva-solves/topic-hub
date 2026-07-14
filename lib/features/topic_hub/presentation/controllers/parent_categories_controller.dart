@@ -2,6 +2,7 @@ import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
 
 //UI =>dumb .should only know what to show right now (err msg ,load spinner,list)
@@ -21,7 +22,7 @@ class ParentCategoriesController extends GetxController {
   final GetParentCategoriesUsecase _getParentCategoriesUsecase;
 
   final isLoading = false.obs;
-  final parentCategories = <ParentCategoryModel>[].obs;
+  final parentCategories = <ParentCategoryEntity>[].obs;
   final errorMessage = ''.obs;
 
   ParentCategoriesController({
@@ -48,7 +49,8 @@ class ParentCategoriesController extends GetxController {
 
       //useCase.execute or .call NO NEEDED
       //bcz meth named call();
-      final List<ParentCategoryModel> result = await _getParentCategoriesUsecase();
+      final List<ParentCategoryEntity> result =
+          await _getParentCategoriesUsecase();
 
       parentCategories.assignAll(result);
 

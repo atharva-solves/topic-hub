@@ -2,6 +2,7 @@ import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
@@ -21,11 +22,11 @@ class TopichubRepoImpl implements TopichubRepo {
     : _topichubRemoteDataSource = topichubRemoteDataSource;
 
   @override
-  Future<List<ParentCategoryModel>> getParentCategories() async {
+  Future<List<ParentCategoryEntity>> getParentCategories() async {
     try {
       print("====== topichub repo imple Starts =======");
 
-      final List<ParentCategoryModel> listParentCategory =
+      final List<ParentCategoryEntity> listParentCategory =
           await _topichubRemoteDataSource.getParentCategories();
 
       print(
