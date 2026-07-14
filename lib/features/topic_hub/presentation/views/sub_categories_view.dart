@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_memo_app/core/routes/app_routes.dart';
-import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_detail_arguments.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_list_arguments.dart';
 import '../controllers/sub_categories_controller.dart';
 
 class SubCategoriesView extends GetView<SubCategoriesController> {
@@ -104,9 +104,11 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
                       );
                       // Next phase: Navigation to projects!
                       Get.toNamed(
-                        AppRoutes.projectDetail,
-                        arguments: ProjectDetailArgs(
+                        AppRoutes.projectList,
+                        arguments: ProjectListArgs(
                           subCategoryId: subCategory.id,
+                          subCategoryTitle: subCategory.title,
+                          subCateoryImage: subCategory.catImg
                         ),
                       );
                     },

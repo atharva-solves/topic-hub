@@ -2,16 +2,16 @@ import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/core/network/api_endpoints.dart';
 import 'package:getx_memo_app/core/network/dio_client.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
-import 'package:getx_memo_app/features/topic_hub/data/data_models/project_detail_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/project_List_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
-import 'package:getx_memo_app/features/topic_hub/domain/entities/project_detail_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
 
 //abstract to future proof swaping for test cases
 abstract class TopichubRemoteDataSource {
   Future<List<ParentCategoryModel>> getParentCategories();
   Future<List<SubCategoryEntity>> getSubCategories(String parentId);
-  Future<List<ProjectDetailEntity>> getProjectdetail(String subCategoryId);
+  Future<List<ProjectListEntity>> getProjectLst(String subCategoryId);
 }
 
 class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
@@ -96,7 +96,7 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
   }
 
   @override
-  Future<List<ProjectDetailEntity>> getProjectdetail(
+  Future<List<ProjectListEntity>> getProjectLst(
     String subCategoryId,
   ) async {
     try {
@@ -108,8 +108,8 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       print('projDet RDS >response is ->$response');
 
       final List<dynamic> rawList = response as List<dynamic>;
-      final List<ProjectDetailEntity> projectDetail = rawList
-          .map((json) => ProjectDetailModel.fromJson(json))
+      final List<ProjectListEntity> projectDetail = rawList
+          .map((json) => ProjectListModel.fromJson(json))
           .toList();
 
       return projectDetail;

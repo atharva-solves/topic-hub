@@ -4,5 +4,5 @@
 class AppRoutes {
   static const String parentCategories = '/parent_categories';
   static const String subCategories = '/sub_categories';
-  static const String projectDetail='/projectdetail';
+  static const String projectList='/project_list';
 }
