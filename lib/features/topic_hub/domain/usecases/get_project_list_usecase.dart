@@ -10,10 +10,10 @@ class GetProjectListUsecase {
     String subCategoryId,
   ) async {
     try {
-      final List<ProjectListEntity> projectDetails = await _topichubRepo
+      final List<ProjectListEntity> projectList = await _topichubRepo
           .getProjectList(subCategoryId);
 
-      return projectDetails;
+      return projectList;
     } catch (e) {
       rethrow;
     }

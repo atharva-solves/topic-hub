@@ -101,18 +101,18 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
   ) async {
     try {
       final response = await _dioClient.get(
-        ApiEndpoints.projectDetails,
+        ApiEndpoints.projectList,
         queryParameters: {'category_id': subCategoryId},
       );
 
       print('projDet RDS >response is ->$response');
 
       final List<dynamic> rawList = response as List<dynamic>;
-      final List<ProjectListEntity> projectDetail = rawList
+      final List<ProjectListEntity> projectList = rawList
           .map((json) => ProjectListModel.fromJson(json))
           .toList();
 
-      return projectDetail;
+      return projectList;
     } on AppException catch (e) {
       rethrow;
     } catch (genericError) {

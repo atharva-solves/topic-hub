@@ -60,9 +60,9 @@ class TopichubRepoImpl implements TopichubRepo {
     String subCategoryId,
   ) async {
     try {
-      final List<ProjectListEntity> projectDetails =
+      final List<ProjectListEntity> projectList =
           await _topichubRemoteDataSource.getProjectLst(subCategoryId);
-      return projectDetails;
+      return projectList;
     } catch (e) {
       rethrow;
     }

@@ -8,13 +8,15 @@ import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_
 class ProjectListController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = ''.obs;
-  final projectDetails = <ProjectListEntity>[].obs;
+  final projectList = <ProjectListEntity>[].obs;
   late final String subCategoryId;
-  final GetProjectListUsecase _projectDetailUsecase;
+  late final String subCategoryTitle;
+  late final String subCategoryImage;
+  final GetProjectListUsecase _projectListUsecase;
 
   ProjectListController({
     required GetProjectListUsecase projectDetailUsecase,
-  }) : _projectDetailUsecase = projectDetailUsecase;
+  }) : _projectListUsecase = projectDetailUsecase;
 
   @override
   void onInit() {
@@ -22,6 +24,8 @@ class ProjectListController extends GetxController {
 
     final ProjectListArgs args = Get.arguments as ProjectListArgs;
     subCategoryId = args.subCategoryId;
+    subCategoryTitle=args.subCategoryTitle;
+    subCategoryImage=args.subCateoryImage;
 
     fetchProjectDetail(subCategoryId);
   }
@@ -31,14 +35,14 @@ class ProjectListController extends GetxController {
       errorMessage.value = '';
       isLoading.value = true;
 
-      final List<ProjectListEntity> fetchedData = await _projectDetailUsecase
+      final List<ProjectListEntity> fetchedData = await _projectListUsecase
           .execute(subCategoryId);
 
       print(
         'projDet Ctr > fetchProj()>recieves ${fetchedData.length} ocjects of ProjDet',
       );
 
-      projectDetails.value = fetchedData;
+      projectList.value = fetchedData;
     } on AppException catch (customException) {
       print('Custom message caught in ProjecDet Ctr');
       errorMessage.value = customException.toString();
