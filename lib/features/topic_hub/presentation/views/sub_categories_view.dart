@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_detail_arguments.dart';
 import '../controllers/sub_categories_controller.dart';
 
 class SubCategoriesView extends GetView<SubCategoriesController> {
@@ -8,7 +10,8 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Consistent modern off-white background
+      backgroundColor:
+          Colors.grey[50], // Consistent modern off-white background
 
       appBar: AppBar(
         // Utilizing the parent arg TITLE fetched by the controller
@@ -29,9 +32,14 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
         children: [
           // 1. THE HERO BANNER: Utilizing the parent arg IMAGE
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(20), // Extra rounded for Gen-Z feel
+              borderRadius: BorderRadius.circular(
+                20,
+              ), // Extra rounded for Gen-Z feel
               child: Image.network(
                 controller.parentImage,
                 width: double.infinity,
@@ -41,7 +49,10 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
                   width: double.infinity,
                   height: 140,
                   color: Colors.grey[200],
-                  child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),
@@ -76,16 +87,28 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
 
               // STATE D: Success
               return ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 itemCount: controller.subCategories.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final subCategory = controller.subCategories[index];
 
                   return InkWell(
                     onTap: () {
-                      print('Navigating to Project Details for: ${subCategory.id}');
+                      print(
+                        'Navigating to Project Details for: ${subCategory.id}',
+                      );
                       // Next phase: Navigation to projects!
+                      Get.toNamed(
+                        AppRoutes.projectDetail,
+                        arguments: ProjectDetailArgs(
+                          subCategoryId: subCategory.id,
+                        ),
+                      );
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
@@ -93,31 +116,42 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade200, width: 1.5),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                          width: 1.5,
+                        ),
                       ),
                       child: Row(
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: Image.network(
-                              subCategory.catImg , // Make sure this matches your entity property
-                              width: 60, // Slightly smaller than parent to show hierarchy
+                              subCategory
+                                  .catImg, // Make sure this matches your entity property
+                              width:
+                                  60, // Slightly smaller than parent to show hierarchy
                               height: 60,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                width: 60,
-                                height: 60,
-                                color: Colors.grey[200],
-                                child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                              ),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    width: 60,
+                                    height: 60,
+                                    color: Colors.grey[200],
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                             ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Text(
-                              subCategory.title ,// Make sure this matches your entity property
+                              subCategory
+                                  .title, // Make sure this matches your entity property
                               style: const TextStyle(
-                                fontSize: 16, // Slightly smaller font than parent
+                                fontSize:
+                                    16, // Slightly smaller font than parent
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black87,
                               ),

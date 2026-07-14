@@ -12,12 +12,12 @@ import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_re
 //2.technical error handling (dio/http if canged in future)
 //3.Database combined task. (fetch from API,compare locally saved fav flags, isFav=true for that id)
 
-class TopichibRepoImpl implements TopichubRepo {
+class TopichubRepoImpl implements TopichubRepo {
   //Dec,Constr init list,meth with trycatch
 
   final TopichubRemoteDataSource _topichubRemoteDataSource;
 
-  TopichibRepoImpl({required TopichubRemoteDataSource topichubRemoteDataSource})
+  TopichubRepoImpl({required TopichubRemoteDataSource topichubRemoteDataSource})
     : _topichubRemoteDataSource = topichubRemoteDataSource;
 
   @override

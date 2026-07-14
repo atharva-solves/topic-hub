@@ -31,7 +31,7 @@ class ParentCategoriesBindin extends Bindings {
     );
 
     Get.lazyPut<TopichubRepo>(
-      () => TopichibRepoImpl(topichubRemoteDataSource: Get.find()),
+      () => TopichubRepoImpl(topichubRemoteDataSource: Get.find()),
     );
 
     Get.lazyPut<GetParentCategoriesUsecase>(

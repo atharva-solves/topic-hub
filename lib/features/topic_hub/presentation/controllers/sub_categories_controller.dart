@@ -57,7 +57,11 @@ class SubCategoriesController extends GetxController {
       errorMessage.value = customException
           .toString(); // Swap this if you have a .message getter!
 
-      Get.snackbar(customException.prefix, customException.exceptionMessage,snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        customException.prefix,
+        customException.exceptionMessage,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (localError) {
       print('subCat ctrl catch local err $localError ');
       errorMessage.value = 'Unexpected local error: $localError';

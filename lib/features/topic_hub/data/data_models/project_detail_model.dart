@@ -5,13 +5,15 @@ class ProjectDetailModel extends ProjectDetailEntity {
     required super.id,
     required super.title,
     required super.images,
+    required super.description,
   });
 
   factory ProjectDetailModel.fromJson(Map<String, dynamic> json) {
     return ProjectDetailModel(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       title: json['title'] as String,
       images: json['images'] as String,
+      description: json['description'] as String
     );
   }
 }

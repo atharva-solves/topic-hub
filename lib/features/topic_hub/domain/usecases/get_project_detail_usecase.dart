@@ -6,7 +6,7 @@ class GetProjectDetailUsecase {
   GetProjectDetailUsecase({required TopichubRepo topichubRepo})
     : _topichubRepo = topichubRepo;
 
-  Future<List<ProjectDetailEntity>> getProjectDetailUsecase(
+  Future<List<ProjectDetailEntity>> execute(
     String subCategoryId,
   ) async {
     try {
