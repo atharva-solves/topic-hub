@@ -2,6 +2,7 @@ import 'package:getx_memo_app/core/errors/app_exceptions.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_detail_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
 
@@ -50,6 +51,19 @@ class TopichibRepoImpl implements TopichubRepo {
           await _topichubRemoteDataSource.getSubCategories(parentId);
       return subCategories;
     } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ProjectDetailEntity>> getProjectdetail(
+    String subCategoryId,
+  ) async {
+    try {
+      final List<ProjectDetailEntity> projectDetails =
+          await _topichubRemoteDataSource.getProjectdetail(subCategoryId);
+      return projectDetails;
+    } catch (e) {
       rethrow;
     }
   }
