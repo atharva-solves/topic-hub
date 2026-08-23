@@ -37,6 +37,7 @@ dependencies:
   get: ^4.7.3
   dio: ^5.10.0
   flutter_widget_from_html: ^0.17.2
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -89,3 +90,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/topichub_logo.png"
+  min_sdk_android: 21

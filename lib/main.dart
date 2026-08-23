@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'TopicHub App',
+      title: 'TopicHub',
       initialRoute: AppRoutes.splash,
       initialBinding: InitialBindings(),
       getPages: AppPages.pages,

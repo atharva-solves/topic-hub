@@ -15,7 +15,7 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
 
       appBar: AppBar(
         title: const Text(
-          'Topic Hub',
+          'TopicHub',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 1.0, // Slight spacing makes it look premium
