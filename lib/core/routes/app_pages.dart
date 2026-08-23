@@ -1,5 +1,7 @@
 import 'package:get/route_manager.dart';
 import 'package:getx_memo_app/core/routes/app_routes.dart';
+import 'package:getx_memo_app/features/splash/presentation/bindings/splash_binding.dart';
+import 'package:getx_memo_app/features/splash/presentation/views/splash_view.dart';
 import 'package:getx_memo_app/features/topic_hub/presentation/bindings/parent_categories_binding.dart';
 import 'package:getx_memo_app/features/topic_hub/presentation/bindings/project_detail_binding.dart';
 import 'package:getx_memo_app/features/topic_hub/presentation/bindings/project_list_binding.dart';
@@ -13,6 +15,11 @@ import 'package:getx_memo_app/features/topic_hub/presentation/views/sub_categori
 
 class AppPages {
   static final List<GetPage> pages = [
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
+    ),
     GetPage(
       name: AppRoutes.parentCategories,
       page: () => const ParentCategoriesView(),

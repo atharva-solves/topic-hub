@@ -2,6 +2,7 @@
 // through which customer can go to its room(View)
 
 class AppRoutes {
+  static const String splash='/splash';
   static const String parentCategories = '/parent_categories';
   static const String subCategories = '/sub_categories';
   static const String projectList = '/project_list';
