@@ -335,7 +335,7 @@ class DioClient {
       print('Details:$error');
       print('==============');
 
-      //thorw : pass MODIFIED error to Translator(API ER HAN) .
+      //thorw : pass MODIFIED error  (modify through Translator(API ER HAN)) 
       //(not rethrow ! it'll pass raw)
       throw ApiErrorHandler.handleError(error);
     }
