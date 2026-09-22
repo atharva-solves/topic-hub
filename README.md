@@ -1,81 +1,241 @@
-# Topic Hub
+# TopicHub
 
-A Flutter application built using **GetX**, **Dio**, and **Clean Architecture** to explore categorized topics and their information.
+A Flutter application for exploring categorized technical topics and projects through a REST API.
 
-> 🚧 **Project Status:** Under active development.
+TopicHub was built as a practical project to learn and apply **Clean Architecture, REST API integration, GetX, Dio, dependency injection, and custom exception handling** in a Flutter application.
 
-## About the Project
+## 📱 Overview
 
-Topic Hub is a learning-based project that I am building step by step while learning professional Flutter application development.
+TopicHub organizes technical learning content into categories and provides users with a structured way to browse topics and related project information.
 
-The goal is not just to build a working application, but also to learn industry-standard architecture, state management, networking, and Git workflows.
+The project focuses on separating presentation logic, business logic, and data-access responsibilities while integrating data from a REST API.
 
-## Tech Stack
+## ✨ Features
 
-* Flutter
-* Dart
-* GetX
-* Dio
-* Clean Architecture
-* Git & GitHub
+* Browse categorized technical topics
+* Navigate between categories, subcategories, and project details
+* Fetch data from REST APIs using Dio
+* Parse API responses into Dart models
+* Reactive state management using GetX
+* Dependency injection using GetX Bindings
+* Application navigation using GetX routing
+* Loading and error state handling
+* Custom exception handling for API/data-layer errors
+* Feature-first project organization
+* Clean Architecture based separation of responsibilities
 
-## Architecture
+## 🛠️ Tech Stack
 
-This project follows the principles of **Clean Architecture**.
+| Technology         | Purpose                                                     |
+| ------------------ | ----------------------------------------------------------- |
+| Flutter            | Application development                                     |
+| Dart               | Programming language                                        |
+| GetX               | State management, dependency injection, and navigation      |
+| Dio                | HTTP client and REST API communication                      |
+| REST API           | Remote data source                                          |
+| Clean Architecture | Separation of presentation, business logic, and data layers |
+| Git & GitHub       | Version control                                             |
+
+## 🏗️ Architecture
+
+The application follows Clean Architecture principles with a layered data flow:
 
 ```text
 Presentation
-    │
-    ▼
-Use Cases
-    │
-    ▼
+     ↓
+GetX Controller
+     ↓
+Use Case
+     ↓
 Repository
-    │
-    ▼
+     ↓
 Remote Data Source
-    │
-    ▼
-Dio Client
-    │
-    ▼
+     ↓
+Dio
+     ↓
 REST API
 ```
 
-## Features Implemented
+The response then travels back through the layers:
 
-* Project structure using Clean Architecture
-* Dio network client
-* Centralized API endpoints
-* Category model with JSON parsing
-* Remote data source
-* Repository layer
-* Use Case layer
-* Git version control with meaningful commits
+```text
+REST API
+     ↓
+Dio
+     ↓
+Remote Data Source
+     ↓
+Repository
+     ↓
+Use Case
+     ↓
+Controller
+     ↓
+UI
+```
 
-## Planned Features
+This separation keeps API communication and business logic independent from the UI layer.
 
-* GetX Controllers
-* Dependency Injection
-* API integration
-* Loading and error states
-* Topic listing screen
-* Topic details screen
-* Search functionality
-* Clean UI implementation
+## 📂 Project Structure
 
-## Learning Goals
+```text
+lib/
+├── core/
+│   ├── bindings/
+│   ├── network/
+│   └── routes/
+│
+├── features/
+│   └── ...
+│
+└── main.dart
+```
 
-This project is helping me learn:
+The project is organized using a feature-first approach, with shared application concerns such as networking, bindings, and routing maintained inside the core layer.
 
-* Flutter application architecture
-* REST API integration
-* GetX state management
-* Dependency Injection
-* Clean code practices
-* Professional Git workflow
-* GitHub version control
+## 🌐 REST API Integration
 
-## Repository
+Dio is used as the HTTP client for communicating with the REST API.
 
-This repository is continuously updated as I progress through the project. Each major architectural milestone is committed separately to maintain a clean and meaningful Git history.
+The networking layer contains centralized API configuration and endpoint definitions, while the remote data source is responsible for making API requests.
+
+The resulting data is converted into Dart models before being consumed by the upper layers.
+
+### Data Flow
+
+```text
+UI
+ ↓
+Controller
+ ↓
+Use Case
+ ↓
+Repository
+ ↓
+Remote Data Source
+ ↓
+Dio Client
+ ↓
+REST API
+ ↓
+JSON Response
+ ↓
+Model
+ ↓
+Repository
+ ↓
+Use Case
+ ↓
+Controller
+ ↓
+UI
+```
+
+## ⚠️ Error Handling
+
+The project includes custom exception handling to avoid exposing raw networking/API errors directly to the presentation layer.
+
+Errors are handled within the data/networking flow and communicated back to the presentation layer so that the UI can respond appropriately.
+
+This was an important part of the project because it helped me understand how failures should be propagated across architectural layers instead of handling every API error directly inside the UI.
+
+## 🔄 State Management
+
+GetX is used for reactive state management.
+
+Controllers manage screen-related state and coordinate interactions between the presentation layer and the underlying use cases.
+
+Reactive values are observed by the UI so that relevant parts of the interface can rebuild when state changes.
+
+GetX is also used for:
+
+* Dependency injection
+* Route management
+* Route arguments
+* Controller lifecycle management
+* Bindings
+
+## 📸 Screenshots
+
+### Splash Screen
+
+<!-- Add screenshot here -->
+
+### Categories / Topics
+
+<!-- Add screenshot here -->
+
+### Topic Listing
+
+<!-- Add screenshot here -->
+
+### Project Details
+
+<!-- Add screenshot here -->
+
+## 🎯 What I Learned
+
+I built TopicHub as a practical project while learning professional Flutter development.
+
+The main concepts I practiced were:
+
+* Structuring a Flutter application using Clean Architecture
+* Separating UI, business logic, and data-access responsibilities
+* Integrating REST APIs using Dio
+* Designing repository abstractions
+* Working with remote data sources
+* Parsing JSON responses into Dart models
+* Managing application state using GetX
+* Using dependency injection and Bindings
+* Implementing GetX navigation and route arguments
+* Designing custom exception handling
+* Organizing a Flutter project using a feature-first structure
+* Using Git and GitHub throughout development
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure Flutter is installed and configured on your system.
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/atharva-solves/topic-hub.git
+```
+
+Navigate to the project:
+
+```bash
+cd topic-hub
+```
+
+Install dependencies:
+
+```bash
+flutter pub get
+```
+
+Run the application:
+
+```bash
+flutter run
+```
+
+## 📌 Project Status
+
+TopicHub is a portfolio and learning project that is being refined as I continue improving my Flutter development skills.
+
+Future improvements may include additional UI refinement, improved responsiveness, testing, and further architectural improvements.
+
+## 👨‍💻 Author
+
+**Atharva Shinde**
+
+GitHub: [atharva-solves](https://github.com/atharva-solves)
+
+---
+
+Built with Flutter and Dart.
