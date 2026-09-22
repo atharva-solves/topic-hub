@@ -52,82 +52,94 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
         }
 
         // STATE D: Success! Draw the UI
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          itemCount: controller.parentCategories.length,
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            debugPrint('Available width: ${constraints.maxWidth}');
+            debugPrint('Available height: ${constraints.maxHeight}');
+            return ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              itemCount: controller.parentCategories.length,
 
-          // The separator builds the gap BETWEEN cards
-          separatorBuilder: (context, index) => const SizedBox(height: 16),
+              // The separator builds the gap BETWEEN cards
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
 
-          itemBuilder: (context, index) {
-            final parentCategory = controller.parentCategories[index];
+              itemBuilder: (context, index) {
+                final parentCategory = controller.parentCategories[index];
 
-            // InkWell gives us that nice ripple animation when the user taps
-            return InkWell(
-              onTap: () {
-                print('Navigating to SubCategories for: ${parentCategory.parentId}');
+                // InkWell gives us that nice ripple animation when the user taps
+                return InkWell(
+                  onTap: () {
+                    print(
+                      'Navigating to SubCategories for: ${parentCategory.parentId}',
+                    );
 
-                Get.toNamed(
-                  AppRoutes.subCategories,
-                  arguments: SubCategoriesArgs(
-                    parentId: parentCategory.parentId!,
-                    parentTitle: parentCategory.parentTitle!,
-                    parentImage: parentCategory.parentImage!,
+                    Get.toNamed(
+                      AppRoutes.subCategories,
+                      arguments: SubCategoriesArgs(
+                        parentId: parentCategory.parentId!,
+                        parentTitle: parentCategory.parentTitle!,
+                        parentImage: parentCategory.parentImage!,
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        // Medium-level widget: ClipRRect forces rounded corners on the image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            parentCategory.parentImage ?? '',
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 70,
+                                  height: 70,
+                                  color: Colors.grey[200],
+                                  child: const Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 16),
+
+                        // Medium-level widget: Expanded prevents long text from crashing the UI
+                        Expanded(
+                          child: Text(
+                            parentCategory.parentTitle ?? 'Unknown',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade200, width: 1.5),
-                ),
-                child: Row(
-                  children: [
-                    // Medium-level widget: ClipRRect forces rounded corners on the image
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        parentCategory.parentImage ?? '',
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 70,
-                          height: 70,
-                          color: Colors.grey[200],
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 16),
-
-                    // Medium-level widget: Expanded prevents long text from crashing the UI
-                    Expanded(
-                      child: Text(
-                        parentCategory.parentTitle ?? 'Unknown',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-
-                    const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
             );
           },
         );

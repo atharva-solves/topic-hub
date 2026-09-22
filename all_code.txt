@@ -1,0 +1,1915 @@
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\main.dart ---  
+import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import 'package:getx_memo_app/core/bindings/initial_bindings.dart';
+import 'package:getx_memo_app/core/network/api_endpoints.dart';
+import 'package:getx_memo_app/core/network/dio_client.dart';
+import 'package:getx_memo_app/core/routes/app_pages.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'TopicHub',
+      initialRoute: AppRoutes.splash,
+      initialBinding: InitialBindings(),
+      getPages: AppPages.pages,
+    );
+  }
+}
+
+
+
+
+//API RESPONSE Inspecting
+/* 
+class ApiTestView extends StatefulWidget {
+  const ApiTestView({super.key});
+
+  @override
+  State<ApiTestView> createState() => _ApiTestViewState();
+}
+
+class _ApiTestViewState extends State<ApiTestView> {
+  //Initialize network engine
+  final DioClient _dioClient = DioClient();
+
+  //show this message(changable ,stf) in UI
+  String consoleStatus = "Press the button below to test the API . . ";
+
+  //meth
+  Future<void> checkRawServerData() async {
+    setState(() {
+      consoleStatus = "connecting to server , check VS code terminal";
+    });
+    try {
+      final rawData =await  _dioClient.get(ApiEndpoints.parentCategories);
+
+      print('Response Type : ${rawData.runtimeType}');
+      print('Data body in rawData response : $rawData');
+
+      setState(() { 
+        consoleStatus = "API fetch and Test Successful .See Trminal of VS code";
+      });
+    } catch (error) {
+      setState(() {
+        consoleStatus = "Error Catched : $error";
+      });
+
+      print('Error Catched : $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('API Console Scanner')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+            consoleStatus,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: checkRawServerData,
+        child: const Icon(Icons.cloud_download),
+      ),
+    );
+  }
+}
+ */ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\bindings\initial_bindings.dart ---  
+import 'package:get/instance_manager.dart';
+import 'package:getx_memo_app/core/network/dio_client.dart';
+
+class InitialBindings extends Bindings{
+  @override
+  void dependencies() {
+
+    //lives till entire app is live
+    Get.put<DioClient>(DioClient(),permanent: true);
+  }
+} 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\consants\app_assets\app_image_assets.dart ---  
+class AppImageAssets {
+  AppImageAssets._();
+  static const String splashImage = 'assets/images/topic_hub_splash.png';
+  static const String logoImage = 'assets/images/topichub_logo.png';
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\errors\api_error_handler.dart ---  
+import 'package:dio/dio.dart';
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+
+// UI Message <--- Format (AppException) <--- err translator <--- raw err
+class ApiErrorHandler {
+  //meth :- stat,ret ApiException instance,input err
+
+  static AppException handleError(dynamic error) {
+    //DIO Crash
+    if (error is DioException) {
+      switch (error.type) {
+        //timeout
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return FetchDataException(
+            message: 'Connection timed out.Please try again.',
+          );
+
+        //connection
+        case DioExceptionType.connectionError:
+          return FetchDataException(message: 'No Internet Connection');
+
+        //server responded err
+        case DioExceptionType.badResponse:
+
+          //execute this action block
+
+          final statusCode = error.response?.statusCode;
+
+          if (statusCode == 400) {
+            return InvalidInputException(message: 'Bad request');
+          } else if (statusCode == 401 || statusCode == 403) {
+            return UnauthorizedException(
+              message: 'Unauthorized access.Please login again',
+            );
+          } else if (statusCode == 404) {
+            return FetchDataException(message: 'Requested resource not found');
+          } else {
+            return FetchDataException(message: 'Server Error : $statusCode');
+          }
+
+        //random DIO exception
+        default:
+          FetchDataException(message: 'Something went wrong with network');
+      }
+    }
+
+    //crash was not due to DIO
+    return FetchDataException(message: 'Unexptected error occured');
+  }
+}
+
+
+//meth flow :
+
+
+ //if err DIO ->
+
+            //START CASE
+    //           FD 1.slow internet (timeout err)
+    //                      a.conn b.send c.recieve
+
+    //            FD 2.No internet (connection err)
+
+    //            3.Bad response (serv responded eith err)
+                  // take code in var 
+                  // start if else
+    //                       INV IN  a.400 > Bad req
+    //                       UNAU    b.401 or 403 > unauth
+    //                       FD      c.404 > serv not found
+    //                       FD      d.random serv err 
+
+    //             4.deaf > random DIO
+                  //END CASE
+                  //END DIO
+
+    // method Fallback ret Unexpected err
+
+
+    //Switch synt:
+      
+    //    switch (valToCompare){
+    //       case val1:
+    //       case val2:
+    //       case val3:
+    //          [---------------------]
+    //          | perform this action |          
+    //          |                     |          
+    //          [---------------------]     
+    //          return/break
+
+        //       case val_4:
+    //          [---------------------]
+    //          | perform this action |          
+    //          |                     |          
+    //          [---------------------]    
+    //          
+    //       deafault:
+    //          [---------------------]
+    //          | perform this action |          
+    //          |                     |          
+    //          [---------------------]     
+    //                       
+    //        } 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\errors\app_exceptions.dart ---  
+//phase I
+//base blueprint of exception
+class AppException implements Exception {
+  final String exceptionMessage;
+  final String prefix;
+
+  AppException({
+    this.exceptionMessage = 'Something went wrong',
+    this.prefix = 'Error',
+  });
+
+  @override
+  String toString() {
+    return '$prefix:$exceptionMessage';
+  }
+}
+
+//phase II
+//3 seperate sub classes for specific exceptions
+
+class FetchDataException extends AppException {
+  //fields ,meth,<--from parents
+  //Constr-->init list-->sup Constr
+  FetchDataException({String message = ''})
+    : super(exceptionMessage: message, prefix: 'Error During Communication');
+}
+
+class InvalidInputException extends AppException {
+  InvalidInputException({String message = ""})
+    : super(exceptionMessage: message, prefix: 'Invalid Input');
+}
+
+class UnauthorizedException extends AppException {
+  UnauthorizedException({String message = ''})
+    : super(exceptionMessage: message, prefix: 'Unauthorized Request');
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\network\api_endpoints.dart ---  
+class ApiEndpoints {
+  static const String baseUrl = "https://mapi.trycatchtech.com/";
+  static const String parentCategories =
+      "v3/memo_projects/memo_projects_parent_category_list";
+
+  static const String subCategories =
+      'v3/memo_projects/memo_projects_child_category_list';
+
+  static const String projectList = 'v3/memo_projects/memo_projects_post_list';
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\network\dio_client.dart ---  
+import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:getx_memo_app/core/errors/api_error_handler.dart';
+import 'package:getx_memo_app/core/network/api_endpoints.dart';
+
+class DioClient {
+  //1 declare 2.Constr with init List 3.param config 4.meth
+
+  final Dio _dio;
+
+  DioClient()
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: ApiEndpoints.baseUrl,
+
+          //mock custom timeout err
+          //connectTimeout: const Duration(milliseconds: 1),
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 15),
+          responseType: ResponseType.json,
+        ),
+      );
+
+  Future<dynamic> get(
+    String endpoint, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    //Debuggin : REQUEST INFO
+    print('=====================');
+    print('API GET REQUEST STARTED in dio client');
+    print('End point : $endpoint');
+    if (queryParameters != null) {
+      print('Query Parameter :$queryParameters');
+    }
+    //-------------
+
+    try {
+      final response = await _dio.get(
+        endpoint,
+        queryParameters: queryParameters,
+      );
+      //if this fails,never established a communication ,no response or Error package---->REDIRECT TO CATCH;
+
+      //Debug Resp
+      print('Status code : ${response.statusCode}');
+
+      //STORE response came from server
+      var finalData = response.data;
+
+      //Double Deserialization
+      if (finalData is String) {
+        print(
+          'Debug: Caught Double serialized json String.now parsing it manually',
+        );
+        finalData = jsonDecode(finalData);
+      }
+    
+      print('API REQUEST DONE');
+      print('================');
+
+      return finalData;
+    } catch (error) {
+      //cannot even reach the server in the first place.
+      //catch dio / Internet errors
+
+      print('API Get request error');
+      print('Details:$error');
+      print('==============');
+
+      //thorw : pass MODIFIED error to Translator(API ER HAN) .
+      //(not rethrow ! it'll pass raw)
+      throw ApiErrorHandler.handleError(error);
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\routes\app_pages.dart ---  
+import 'package:get/route_manager.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+import 'package:getx_memo_app/features/splash/presentation/bindings/splash_binding.dart';
+import 'package:getx_memo_app/features/splash/presentation/views/splash_view.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/bindings/parent_categories_binding.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/bindings/project_detail_binding.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/bindings/project_list_binding.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/bindings/sub_categories_bindings.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/views/parent_categories_view.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/views/project_detail_view.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/views/project_list_view.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/views/sub_categories_view.dart';
+
+//central registery -> [route name - room (View/Screen) - checkList prepared (bindings)]
+
+class AppPages {
+  static final List<GetPage> pages = [
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.parentCategories,
+      page: () => const ParentCategoriesView(),
+      binding: ParentCategoriesBindin(),
+    ),
+    GetPage(
+      name: AppRoutes.subCategories,
+      page: () => const SubCategoriesView(),
+      binding: SubCategoriesBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.projectList,
+      page: () => const ProjectListView(),
+      binding: ProjectListBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.projectDetail,
+      page: () => const ProjectDetailView(),
+      binding: ProjectDetailBinding(),
+    ),
+  ];
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\core\routes\app_routes.dart ---  
+//name of the route
+// through which customer can go to its room(View)
+
+class AppRoutes {
+  static const String splash='/splash';
+  static const String parentCategories = '/parent_categories';
+  static const String subCategories = '/sub_categories';
+  static const String projectList = '/project_list';
+  static const String projectDetail = '/project_detail';
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\splash\presentation\bindings\splash_binding.dart ---  
+import 'package:get/instance_manager.dart';
+import 'package:getx_memo_app/features/splash/presentation/controllers/splash_controller.dart';
+
+class SplashBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<SplashController>(SplashController());
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\splash\presentation\controllers\splash_controller.dart ---  
+import 'dart:async';
+
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+
+class SplashController extends GetxController {
+  @override
+  void onInit() {
+    super.onInit();
+    _startSplashTimer();
+  }
+
+  void _startSplashTimer() {
+    Timer(const Duration(seconds: 3), () {
+      Get.offAllNamed(AppRoutes.parentCategories);
+    });
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\splash\presentation\views\splash_view.dart ---  
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/consants/app_assets/app_image_assets.dart';
+import 'package:getx_memo_app/features/splash/presentation/controllers/splash_controller.dart';
+
+class SplashView extends GetView<SplashController>{
+  const SplashView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: Image.asset(
+        AppImageAssets.splashImage,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      ),);
+  }
+} 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\data\data_models\parent_category_model.dart ---  
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
+
+class ParentCategoryModel extends ParentCategoryEntity {
+  ParentCategoryModel({super.parentId, super.parentTitle, super.parentImage});
+
+  //String keys of json(map) matches test's print .
+
+  factory ParentCategoryModel.fromJson(Map<String, dynamic> json) {
+    return ParentCategoryModel(
+      // The API sends the ID as an integer (e.g., '1'), but our model expects a String.
+      // Calling .toString() prevents type crash errors.
+
+      //mock data processing error for RDS with as int
+      parentId: json['id'] as String?,
+
+      // id: json['id']?.toString(),
+      parentTitle: json['cat_name'],
+      parentImage: json['cat_image'],
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\data\data_models\project_List_model.dart ---  
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
+
+class ProjectListModel extends ProjectListEntity {
+  ProjectListModel({
+    required super.id,
+    required super.title,
+    required super.images,
+    required super.description,
+  });
+
+  factory ProjectListModel.fromJson(Map<String, dynamic> json) {
+    return ProjectListModel(
+      id: json['id'].toString(),
+      title: json['title'] as String,
+      images: json['images'] as String,
+      description: json['description'] as String
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\data\data_models\sub_category_model.dart ---  
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
+
+//no fall back and null handling
+//SoC parse Json
+class SubCategoryModel extends SubCategoryEntity {
+  SubCategoryModel({
+    required super.id,
+
+    required super.title,
+    required super.catImg,
+    super.description,
+  });
+
+  factory SubCategoryModel.fromJson(Map<String, dynamic> json) {
+    return SubCategoryModel(
+      id: json['id'] as String,
+
+      //API's snake_case --> dart camelCase
+      title: json['cat_name'] as String,
+      catImg: json['cat_img'] as String,
+      description: json['description'] as String?,
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\data\data_sources\topichub_remote_data_source.dart ---  
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+import 'package:getx_memo_app/core/network/api_endpoints.dart';
+import 'package:getx_memo_app/core/network/dio_client.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/project_List_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
+
+//abstract to future proof swaping for test cases
+abstract class TopichubRemoteDataSource {
+  Future<List<ParentCategoryEntity>> getParentCategories();
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId);
+  Future<List<ProjectListEntity>> getProjectLst(String subCategoryId);
+}
+
+class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
+  //1.fields dec fin _ 2.Constr with init list for _. 3.Meth with TRY CATCH
+  final DioClient _dioClient;
+
+  TopichubRemoteDataSourceImpl({required DioClient dioClient})
+    : _dioClient = dioClient;
+
+  @override
+  Future<List<ParentCategoryEntity>> getParentCategories() async {
+    try {
+      print('====== Topic Hub RemoteDS starts =====  ');
+      print('Fetching data from DIO client');
+
+      //mocking to test custom 404 err
+      //final responseData = await _dioClient.get('fake end point to test custom 404 error');
+
+      final responseData = await _dioClient.get(ApiEndpoints.parentCategories);
+
+      /* 
+      //checking what this API sends us
+      //hardcoding cat_id
+      final projectDetailData = await _dioClient.get(
+        ApiEndpoints.projectDetails,
+        queryParameters: {'category_id': 3},
+      );
+      print('<><><> projectDetail API sent :- $projectDetailData'); */
+
+      print(
+        'Raw response came .rawResponse type : ${responseData.runtimeType}',
+      );
+
+      //bcz we already tested in main
+      final List<dynamic> rawList = responseData as List<dynamic>;
+
+      final List<ParentCategoryEntity> listParentCatrgories = rawList
+          .map((json) => ParentCategoryModel.fromJson(json))
+          .toList();
+
+      print(
+        'raw list convertend to Model list : ${listParentCatrgories.runtimeType}',
+      );
+      print('====== Topichub Remote DS Ends ======');
+      return listParentCatrgories;
+    } on AppException catch (error) {
+      print('Error Catched in TopichubRemoteDS getParent() : $error');
+      print('===== Remote DS END =====');
+      rethrow;
+    } catch (error) {
+      print("Generic data processing err > ${error.toString()}");
+      throw FetchDataException(message: 'Data processing error');
+    }
+  }
+
+  //SubCategories
+  @override
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId) async {
+    try {
+      final responseData = await _dioClient.get(
+        ApiEndpoints.subCategories,
+
+        queryParameters: {'parent_id': parentId},
+      );
+
+      final List<dynamic> rawList = responseData as List<dynamic>;
+
+      final List<SubCategoryEntity> subCategories = rawList.map((json) {
+        print(
+          '-__-__-__ SubCategory API sent map>id type > ${json['id'].runtimeType}',
+        );
+        return SubCategoryModel.fromJson(json);
+      }).toList();
+
+      return subCategories;
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      print('-_-_-_ E R R O R TopicHub>RDS>getSubCat $e');
+      throw FetchDataException(message: 'Data processing error');
+    }
+  }
+
+  @override
+  Future<List<ProjectListEntity>> getProjectLst(
+    String subCategoryId,
+  ) async {
+    try {
+      final response = await _dioClient.get(
+        ApiEndpoints.projectList,
+        queryParameters: {'category_id': subCategoryId},
+      );
+
+      print('projDet RDS >response is ->$response');
+
+      final List<dynamic> rawList = response as List<dynamic>;
+      final List<ProjectListEntity> projectList = rawList
+          .map((json) => ProjectListModel.fromJson(json))
+          .toList();
+
+      return projectList;
+    } on AppException catch (e) {
+      rethrow;
+    } catch (genericError) {
+      throw FetchDataException(message: 'Data processing error');
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\data\repositories_impl\topichib_repo_impl.dart ---  
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/sub_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+
+//1.data source management (what if no internet ,fetch from LDS)
+//  LDS caching (after fetching from API , cache it save it locally safe side)
+
+//2.technical error handling (dio/http if canged in future)
+//3.Database combined task. (fetch from API,compare locally saved fav flags, isFav=true for that id)
+
+class TopichubRepoImpl implements TopichubRepo {
+  //Dec,Constr init list,meth with trycatch
+
+  final TopichubRemoteDataSource _topichubRemoteDataSource;
+
+  TopichubRepoImpl({required TopichubRemoteDataSource topichubRemoteDataSource})
+    : _topichubRemoteDataSource = topichubRemoteDataSource;
+
+  @override
+  Future<List<ParentCategoryEntity>> getParentCategories() async {
+    try {
+      print("====== topichub repo imple Starts =======");
+
+      final List<ParentCategoryEntity> listParentCategory =
+          await _topichubRemoteDataSource.getParentCategories();
+
+      print(
+        'fetched list of ${listParentCategory.length} ParentCat from Remote DS',
+      );
+      print('passing to usecase');
+      print('====== Topichub Repo Impl End ======');
+
+      return listParentCategory;
+    } catch (e) {
+      print('Exception caught : $e');
+
+      print('====== Topichub Repo Impl End ======');
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId) async {
+    try {
+      final List<SubCategoryEntity> subCategories =
+          await _topichubRemoteDataSource.getSubCategories(parentId);
+      return subCategories;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ProjectListEntity>> getProjectList(
+    String subCategoryId,
+  ) async {
+    try {
+      final List<ProjectListEntity> projectList =
+          await _topichubRemoteDataSource.getProjectLst(subCategoryId);
+      return projectList;
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\entities\parent_category_entity.dart ---  
+class ParentCategoryEntity {
+  final String? parentId;
+  final String? parentImage;
+  final String? parentTitle;
+
+  ParentCategoryEntity({
+    required this.parentId,
+    required this.parentImage,
+    required this.parentTitle,
+  });
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\entities\project_list_entity.dart ---  
+class ProjectListEntity {
+  final String id;
+  final String title;
+  final String images;
+  final String description;
+
+  ProjectListEntity({
+    required this.id,
+    required this.title,
+    required this.images,
+    required this.description
+  });
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\entities\sub_category_entity.dart ---  
+class SubCategoryEntity {
+  final String id;
+  final String title;
+  final String catImg;
+  final String? description;
+
+  const SubCategoryEntity({
+    required this.id,
+    required this.title,
+    required this.catImg,
+    this.description,
+  });
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\repositories\topichub_repo.dart ---  
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
+
+//dont care from where the data is coming
+//imple will handle data logic
+abstract class TopichubRepo {
+  //promise any implementation must provide list
+  Future<List<ParentCategoryEntity>> getParentCategories();
+  Future<List<SubCategoryEntity>> getSubCategories(String parentId);
+  Future<List<ProjectListEntity>> getProjectList(String subCategoryId);
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\usecases\get_parent_categories_usecase.dart ---  
+//seperate class for one single action User can take
+//business logic (suppose added filtering or sorting ,we do it here )
+
+//call() --->if a function named exactly as 'call()' ,
+//     allows instance to execute/act as its a function
+//     no need to obj.call(). Directly--> obj(). call get executed.
+
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+
+class GetParentCategoriesUsecase {
+  //1.fields _ obj 2.constr with init list 3.meth 'call'
+
+  final TopichubRepo _topichubRepo;
+
+  GetParentCategoriesUsecase({required TopichubRepo topichubRepo})
+    : _topichubRepo = topichubRepo;
+
+  //call()
+  Future<List<ParentCategoryEntity>> call() async {
+    try {
+      print('===== Usecase GetParentCat Started =====');
+      print('fetching parent list from repo');
+
+      final List<ParentCategoryEntity> listParentCategories =
+          await _topichubRepo.getParentCategories();
+
+      print(
+        'list fetched : length:${listParentCategories.length} type:${listParentCategories.runtimeType}',
+      );
+      print('Returning list to ctr');
+
+      return listParentCategories;
+    } catch (error) {
+      print('Error Caught by usecase :GetParentCat :$error');
+      print('rethrowing to ctr');
+
+      rethrow;
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\usecases\get_project_list_usecase.dart ---  
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+
+class GetProjectListUsecase {
+  final TopichubRepo _topichubRepo;
+  GetProjectListUsecase({required TopichubRepo topichubRepo})
+    : _topichubRepo = topichubRepo;
+
+  Future<List<ProjectListEntity>> execute(
+    String subCategoryId,
+  ) async {
+    try {
+      final List<ProjectListEntity> projectList = await _topichubRepo
+          .getProjectList(subCategoryId);
+
+      return projectList;
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\domain\usecases\get_sub_categories_usecase.dart ---  
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+
+class GetSubCategoriesUsecase {
+  final TopichubRepo _topichubRepo;
+  GetSubCategoriesUsecase({required TopichubRepo topichubRepo})
+    : _topichubRepo = topichubRepo;
+
+  Future<List<SubCategoryEntity>> execute(String parentId) async {
+    try {
+      final List<SubCategoryEntity> subCategories = await _topichubRepo
+          .getSubCategories(parentId);
+
+      print('_-__UC list length -->  ${subCategories.length}');
+      return subCategories;
+    } catch (error) {
+      rethrow;
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\arguments\project_detail_arguments.dart ---  
+class ProjectDetailArguments {
+  final String subCategoryTitle;
+  final String projectTitle;
+  final String projectImage;
+  final String projectDescription;
+
+  ProjectDetailArguments({
+    required this.subCategoryTitle,
+    required this.projectTitle,
+    required this.projectImage,
+    required this.projectDescription,
+  });
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\arguments\project_list_arguments.dart ---  
+class ProjectListArgs {
+  final String subCategoryId;
+  final String subCategoryTitle;
+  final String subCateoryImage;
+  ProjectListArgs({
+    required this.subCategoryId,
+    required this.subCategoryTitle,
+    required this.subCateoryImage,
+  });
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\arguments\sub_categories_arguments.dart ---  
+class SubCategoriesArgs {
+  final String parentId;
+  final String parentTitle;
+  final String parentImage;
+
+  SubCategoriesArgs({
+    required this.parentId,
+    required this.parentTitle,
+    required this.parentImage,
+  });
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\bindings\parent_categories_binding.dart ---  
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/network/dio_client.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/data/repositories_impl/topichib_repo_impl.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/controllers/parent_categories_controller.dart';
+
+//WHY? :
+//     SoC :
+//     UI<- req ctr<UC<repo<RDS<DioClient (actually instances of them)
+//     waterfall of instance initialization
+//     UI needs to be dumb ,not init.
+
+//what : class for Dep Inj (Bindings)
+//       Ensure checklist is
+
+//HOW :
+//      ext Bindings
+//      @ovr dep()
+//      Get.lazyput<Type>(()=>impl);
+//      impl(req: Get.find())
+
+//lazyPut --> init only when screen is actually opened
+
+class ParentCategoriesBindin extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<TopichubRemoteDataSource>(
+      () => TopichubRemoteDataSourceImpl(dioClient: Get.find()),
+    );
+
+    Get.lazyPut<TopichubRepo>(
+      () => TopichubRepoImpl(topichubRemoteDataSource: Get.find()),
+    );
+
+    Get.lazyPut<GetParentCategoriesUsecase>(
+      () => GetParentCategoriesUsecase(topichubRepo: Get.find()),
+    );
+
+    Get.lazyPut<ParentCategoriesController>(
+      () => ParentCategoriesController(getParentCategoriesUsecase: Get.find()),
+    );
+
+    print('===== Topichub Dep Inj with binding END =====');
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\bindings\project_detail_binding.dart ---  
+import 'package:get/get.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/controllers/project_detail_controller.dart';
+
+class ProjectDetailBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<ProjectDetailController>(() => ProjectDetailController());
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\bindings\project_list_binding.dart ---  
+import 'package:get/instance_manager.dart';
+import 'package:getx_memo_app/core/network/dio_client.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/data/repositories_impl/topichib_repo_impl.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_project_list_usecase.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/controllers/project_list_controller.dart';
+
+class ProjectListBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<TopichubRemoteDataSource>(
+      () => TopichubRemoteDataSourceImpl(dioClient: Get.find<DioClient>()),
+    );
+
+    Get.lazyPut<TopichubRepo>(
+      () => TopichubRepoImpl(
+        topichubRemoteDataSource: Get.find<TopichubRemoteDataSource>(),
+      ),
+    );
+
+    Get.lazyPut<GetProjectListUsecase>(
+      () => GetProjectListUsecase(topichubRepo: Get.find<TopichubRepo>()),
+    );
+
+    Get.lazyPut<ProjectListController>(
+      () => ProjectListController(
+        projectDetailUsecase: Get.find<GetProjectListUsecase>(),
+      ),
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\bindings\sub_categories_bindings.dart ---  
+import 'package:get/instance_manager.dart';
+import 'package:getx_memo_app/core/network/dio_client.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_sources/topichub_remote_data_source.dart';
+import 'package:getx_memo_app/features/topic_hub/data/repositories_impl/topichib_repo_impl.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/repositories/topichub_repo.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_sub_categories_usecase.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/controllers/sub_categories_controller.dart';
+
+class SubCategoriesBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<TopichubRemoteDataSource>(
+      () => TopichubRemoteDataSourceImpl(dioClient: Get.find<DioClient>()),
+    );
+
+    Get.lazyPut<TopichubRepo>(
+      () => TopichubRepoImpl(
+        topichubRemoteDataSource: Get.find<TopichubRemoteDataSource>(),
+      ),
+    );
+
+    Get.lazyPut<GetSubCategoriesUsecase>(
+      () => GetSubCategoriesUsecase(topichubRepo: Get.find<TopichubRepo>()),
+    );
+
+    Get.lazyPut<SubCategoriesController>(
+      () => SubCategoriesController(
+        getSubCategoriesUsecase: Get.find<GetSubCategoriesUsecase>(),
+      ),
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\controllers\parent_categories_controller.dart ---  
+import 'package:get/route_manager.dart';
+import 'package:get/state_manager.dart';
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
+
+//UI =>dumb .should only know what to show right now (err msg ,load spinner,list)
+//ctr=> fetch data.hold these states and notify UI when they change (obs)
+//how? with .obs (reactive programming)
+
+//new concept : list.assignAll ->same mem loc,just edits existing (101fm)
+//              list=newList ->create new mem loc obj (102 fm) ,But UI would still listening to old (101fm)
+//             therefore .add ,.addAll , .assignAll
+
+class ParentCategoriesController extends GetxController {
+  //1 field _usecase obj & var .obs(1.isLoad, 2.list,3.err msg)
+  //2 constr with init list
+  //3 @override lifecycle methods [onInit()]
+  //4 custom meth with TRY CATCH FINALLY
+
+  final GetParentCategoriesUsecase _getParentCategoriesUsecase;
+
+  final isLoading = false.obs;
+  final parentCategories = <ParentCategoryEntity>[].obs;
+  final errorMessage = ''.obs;
+
+  ParentCategoriesController({
+    required GetParentCategoriesUsecase getParentCategoriesUsecase,
+  }) : _getParentCategoriesUsecase = getParentCategoriesUsecase;
+
+  //executes automatically for the first time when , UI view called/opened
+  @override
+  void onInit() {
+    super.onInit();
+
+    //custom function
+    fetchParentCategories();
+  }
+
+  Future<void> fetchParentCategories() async {
+    print('==== ctr>fetchParCat END =====');
+
+    try {
+      isLoading.value = true;
+
+      //Clear Old msg
+      errorMessage.value = '';
+
+      //useCase.execute or .call NO NEEDED
+      //bcz meth named call();
+      final List<ParentCategoryEntity> result =
+          await _getParentCategoriesUsecase();
+
+      parentCategories.assignAll(result);
+
+      /* print(
+        'parent categories fetch succefully : length :${parentCategories.length} , type : ${parentCategories.runtimeType}',
+      ); */
+    } on AppException catch (customError) {
+      print('parent Ctr>custom err caught : $customError');
+
+      errorMessage.value = customError.toString();
+
+      Get.snackbar(
+        customError.prefix, //title
+        customError.exceptionMessage, //msg
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (error) {
+      print('Ctr->FallBack Catch for generic Dart/Logic err :$error');
+      errorMessage.value = error.toString();
+    } finally {
+      isLoading.value = false;
+      print('==== ctr>fetchParCat END =====');
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\controllers\project_detail_controller.dart ---  
+import 'package:get/get.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_detail_arguments.dart';
+
+class ProjectDetailController extends GetxController {
+  late final String subCategoryTitle;
+  late final String projectTitle;
+  late final String projectImage;
+  late final String projectDescription;
+  @override
+  void onInit() {
+    super.onInit();
+    final ProjectDetailArguments args = Get.arguments as ProjectDetailArguments;
+
+    subCategoryTitle = _stripHtml(args.subCategoryTitle);
+    projectTitle = _stripHtml(args.projectTitle);
+    projectImage = _stripHtml(args.projectImage);
+    projectDescription = _stripHtml(args.projectDescription);
+  }
+
+  // A private helper function to sanitize the string
+  String _stripHtml(String htmlString) {
+    // 1. Replace block elements like </p>, </li>, </h1> with newlines for spacing
+    String step1 = htmlString.replaceAll(RegExp(r'<\/p>|<\/li>|<\/h[1-6]>'), '\n\n');
+    // 2. Strip all remaining HTML tags
+    String step2 = step1.replaceAll(RegExp(r'<[^>]*>'), '');
+    // 3. Clean up HTML entities like &ndash; or &nbsp;
+    String step3 = step2.replaceAll(RegExp(r'&[^;]+;'), ' ');
+    // 4. Trim extra spacing
+    return step3.trim();
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\controllers\project_list_controller.dart ---  
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/project_list_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_project_list_usecase.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_list_arguments.dart';
+
+class ProjectListController extends GetxController {
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+  final projectList = <ProjectListEntity>[].obs;
+  late final String subCategoryId;
+  late final String subCategoryTitle;
+  late final String subCategoryImage;
+  final GetProjectListUsecase _projectListUsecase;
+
+  ProjectListController({required GetProjectListUsecase projectDetailUsecase})
+    : _projectListUsecase = projectDetailUsecase;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    final ProjectListArgs args = Get.arguments as ProjectListArgs;
+    subCategoryId = args.subCategoryId;
+    subCategoryTitle = args.subCategoryTitle;
+    subCategoryImage = args.subCateoryImage;
+
+    fetchProjectDetail(subCategoryId);
+  }
+
+  Future<void> fetchProjectDetail(String subCategoryId) async {
+    try {
+      errorMessage.value = '';
+      isLoading.value = true;
+
+      final List<ProjectListEntity> fetchedData = await _projectListUsecase
+          .execute(subCategoryId);
+
+      print(
+        'projDet Ctr > fetchProj()>recieves ${fetchedData.length} ocjects of ProjDet',
+      );
+
+      projectList.value = fetchedData;
+    } on AppException catch (customException) {
+      print('Custom message caught in ProjecDet Ctr');
+      errorMessage.value = customException.toString();
+      Get.snackbar(
+        customException.prefix,
+        customException.exceptionMessage,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (error) {
+      print('local error caught in Proj Det CTR');
+      errorMessage.value = 'local error caught in details ctr';
+      Get.snackbar('Error: ', "$error");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\controllers\sub_categories_controller.dart ---  
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:getx_memo_app/core/errors/app_exceptions.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/entities/sub_category_entity.dart';
+import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_sub_categories_usecase.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/sub_categories_arguments.dart';
+
+class SubCategoriesController extends GetxController {
+  // Explicit Rx Types
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+  final RxList<SubCategoryEntity> subCategories = <SubCategoryEntity>[].obs;
+  late final String parentImage;
+  late final String parentTitle;
+
+  final GetSubCategoriesUsecase _getSubCategoriesUsecase;
+
+  SubCategoriesController({
+    required GetSubCategoriesUsecase getSubCategoriesUsecase,
+  }) : _getSubCategoriesUsecase = getSubCategoriesUsecase;
+  @override
+  void onInit() {
+    super.onInit();
+    print(' Controller waking up: Extracting routing args...');
+
+    // 2. The Controller does the "heavy lifting" of fetching and casting the arguments
+    final SubCategoriesArgs args = Get.arguments as SubCategoriesArgs;
+
+    // 3. Save them into plain fields
+    parentTitle = args.parentTitle;
+    parentImage = args.parentImage;
+
+    // 4. Fire off the API request using the ID from the args immediately!
+    getSubCategories(args.parentId);
+  }
+
+  Future<void> getSubCategories(String parentId) async {
+    try {
+      print('Sub category Ctrl started');
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final List<SubCategoryEntity> fetchedData = await _getSubCategoriesUsecase
+          .execute(parentId);
+
+      print(
+        'ctr fetched list of ${fetchedData.runtimeType} length ${fetchedData.length}',
+      );
+      subCategories.assignAll(fetchedData);
+    } on AppException catch (customException) {
+      // Assuming you have a specific message property in your AppException
+
+      print('error in sub cat ctr > ${customException.toString()}');
+      errorMessage.value = customException
+          .toString(); // Swap this if you have a .message getter!
+
+      Get.snackbar(
+        customException.prefix,
+        customException.exceptionMessage,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (localError) {
+      print('subCat ctrl catch local err $localError ');
+      errorMessage.value = 'Unexpected local error: $localError';
+    } finally {
+      print('Sub category Ctrl started');
+      isLoading.value = false;
+    }
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\views\parent_categories_view.dart ---  
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/sub_categories_arguments.dart';
+import '../controllers/parent_categories_controller.dart';
+
+class ParentCategoriesView extends GetView<ParentCategoriesController> {
+  const ParentCategoriesView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // 1. Soft background color (Off-white is very modern)
+      backgroundColor: Colors.grey[50],
+
+      appBar: AppBar(
+        title: const Text(
+          'TopicHub',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0, // Slight spacing makes it look premium
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent, // Blends into the scaffold
+        elevation: 0, // Removes the ugly shadow
+        foregroundColor: Colors.black, // Makes the text and icons black
+      ),
+
+      // 2. Obx makes only the body reactive.
+      body: Obx(() {
+        // STATE A: Loading
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.black),
+          );
+        }
+
+        // STATE B: Error from API
+        if (controller.errorMessage.value.isNotEmpty) {
+          return Center(
+            child: Text(
+              controller.errorMessage.value,
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        // STATE C: Data is empty
+        if (controller.parentCategories.isEmpty) {
+          return const Center(child: Text('No topics found.'));
+        }
+
+        // STATE D: Success! Draw the UI
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            debugPrint('Available width: ${constraints.maxWidth}');
+            debugPrint('Available height: ${constraints.maxHeight}');
+            return ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              itemCount: controller.parentCategories.length,
+
+              // The separator builds the gap BETWEEN cards
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+
+              itemBuilder: (context, index) {
+                final parentCategory = controller.parentCategories[index];
+
+                // InkWell gives us that nice ripple animation when the user taps
+                return InkWell(
+                  onTap: () {
+                    print(
+                      'Navigating to SubCategories for: ${parentCategory.parentId}',
+                    );
+
+                    Get.toNamed(
+                      AppRoutes.subCategories,
+                      arguments: SubCategoriesArgs(
+                        parentId: parentCategory.parentId!,
+                        parentTitle: parentCategory.parentTitle!,
+                        parentImage: parentCategory.parentImage!,
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        // Medium-level widget: ClipRRect forces rounded corners on the image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            parentCategory.parentImage ?? '',
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 70,
+                                  height: 70,
+                                  color: Colors.grey[200],
+                                  child: const Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 16),
+
+                        // Medium-level widget: Expanded prevents long text from crashing the UI
+                        Expanded(
+                          child: Text(
+                            parentCategory.parentTitle ?? 'Unknown',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      }),
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\views\project_detail_view.dart ---  
+import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:get/get.dart';
+import '../controllers/project_detail_controller.dart';
+
+class ProjectDetailView extends GetView<ProjectDetailController> {
+  const ProjectDetailView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+
+      appBar: AppBar(
+        title: Text(
+          controller.subCategoryTitle,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
+
+      // SingleChildScrollView: The medium-level widget preventing pixel overflow
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.grey.shade200, width: 1.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Hero Image
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(
+                    22,
+                  ), // Mathematically aligned inside the border
+                ),
+                child: Image.network(
+                  controller.projectImage,
+                  width: double.infinity,
+                  height: 240,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: double.infinity,
+                    height: 240,
+                    color: Colors.grey[200],
+                    child: const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 48,
+                    ),
+                  ),
+                ),
+              ),
+
+              // 2. Text Content Area
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Dynamic Project Title
+                    Text(
+                      controller.projectTitle,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                        height: 1.3,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Editorial Section Divider
+                    Text(
+                      'Overview'.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[400],
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    //the reg exp way
+                    // Dynamic Project Description (Basic text widget, 100% Dumb UI)
+                    Text(
+                      controller.projectDescription,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey[800],
+                        height: 1.6, // Taller line-height for easier reading
+                      ),
+                    ),
+
+                    /* //the html wid for flutter (package way)
+                    // 2. The Black-Box HTML Widget
+                    HtmlWidget(
+                      controller.projectDescription,
+                      textStyle: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey[800],
+                        height: 1.6,
+                      ),
+                    ), */
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+ 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\views\project_list_view.dart ---  
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+// Make sure to import your exact ProjectDetailArguments file
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_detail_arguments.dart';
+import '../controllers/project_list_controller.dart'; 
+
+class ProjectListView extends GetView<ProjectListController> {
+  const ProjectListView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // STEP 1: Background canvas setup
+      backgroundColor: Colors.grey[50],
+      
+      // STEP 2: The minimal app header
+      appBar: AppBar(
+        title: Text(
+          controller.subCategoryTitle,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
+      
+      body: Column(
+        children: [
+          // STEP 3: Hero Banner representation
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                controller.subCategoryImage,
+                width: double.infinity,
+                height: 140,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: double.infinity,
+                  height: 140,
+                  color: Colors.grey[200],
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // STEP 4: The Reactive Grid/List
+          Expanded(
+            child: Obx(() {
+              // State A: Network call is active
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.black),
+                );
+              }
+
+              // State B: Network/Data logic failed
+              if (controller.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Text(
+                    controller.errorMessage.value,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+
+              // State C: List returned empty from server
+              if (controller.projectList.isEmpty) {
+                return const Center(child: Text('No projects found.'));
+              }
+
+              // State D: Render list on success
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                itemCount: controller.projectList.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final project = controller.projectList[index];
+
+                  // InkWell adds interactive ripple effect on tap
+                  return InkWell(
+                    onTap: () {
+                      // Triggering seamless data transfer to ProjectDetailView
+                      Get.toNamed(
+                        AppRoutes.projectDetail,
+                        arguments: ProjectDetailArguments(
+                          subCategoryTitle: controller.subCategoryTitle,
+                          projectTitle: project.title,
+                          projectImage: project.images,
+                          projectDescription: project.description, // Passed directly!
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Top part of card: Clipped Image
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(18),
+                            ),
+                            child: Image.network(
+                              project.images,
+                              width: double.infinity,
+                              height: 160,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    width: double.infinity,
+                                    height: 160,
+                                    color: Colors.grey[200],
+                                    child: const Icon(
+                                      Icons.broken_image,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                            ),
+                          ),
+                          // Bottom part of card: Project Label
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              project.title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+} 
+// --- File: E:\IT\Flutter Marathon july aug\FLUTTER PREPS\Atharva Portfolio Apps\topic_hub_app\lib\features\topic_hub\presentation\views\sub_categories_view.dart ---  
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_memo_app/core/routes/app_routes.dart';
+import 'package:getx_memo_app/features/topic_hub/presentation/arguments/project_list_arguments.dart';
+import '../controllers/sub_categories_controller.dart';
+
+class SubCategoriesView extends GetView<SubCategoriesController> {
+  const SubCategoriesView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor:
+          Colors.grey[50], // Consistent modern off-white background
+
+      appBar: AppBar(
+        // Utilizing the parent arg TITLE fetched by the controller
+        title: Text(
+          controller.parentTitle,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black, // Makes back button and text black
+      ),
+
+      body: Column(
+        children: [
+          // 1. THE HERO BANNER: Utilizing the parent arg IMAGE
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(
+                20,
+              ), // Extra rounded for Gen-Z feel
+              child: Image.network(
+                controller.parentImage,
+                width: double.infinity,
+                height: 140,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: double.infinity,
+                  height: 140,
+                  color: Colors.grey[200],
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // 2. THE LIST (Reactive)
+          Expanded(
+            child: Obx(() {
+              // STATE A: Loading
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.black),
+                );
+              }
+
+              // STATE B: Error
+              if (controller.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Text(
+                    controller.errorMessage.value,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+
+              // STATE C: Empty
+              if (controller.subCategories.isEmpty) {
+                return const Center(child: Text('No sub-categories found.'));
+              }
+
+              // STATE D: Success
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                itemCount: controller.subCategories.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final subCategory = controller.subCategories[index];
+
+                  return InkWell(
+                    onTap: () {
+                      print(
+                        'Navigating to Project Details for: ${subCategory.id}',
+                      );
+                      // Next phase: Navigation to projects!
+                      Get.toNamed(
+                        AppRoutes.projectList,
+                        arguments: ProjectListArgs(
+                          subCategoryId: subCategory.id,
+                          subCategoryTitle: subCategory.title,
+                          subCateoryImage: subCategory.catImg
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              subCategory
+                                  .catImg, // Make sure this matches your entity property
+                              width:
+                                  60, // Slightly smaller than parent to show hierarchy
+                              height: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    width: 60,
+                                    height: 60,
+                                    color: Colors.grey[200],
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              subCategory
+                                  .title, // Make sure this matches your entity property
+                              style: const TextStyle(
+                                fontSize:
+                                    16, // Slightly smaller font than parent
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+ 
