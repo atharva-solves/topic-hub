@@ -4,6 +4,17 @@ A Flutter application for exploring categorized technical topics and projects th
 
 TopicHub was built as a practical project to learn and apply **Clean Architecture, REST API integration, GetX, Dio, dependency injection, and custom exception handling** in a Flutter application.
 
+## 📸 Screenshots
+
+| Categories / Topics | Topic Listing |
+| --- | --- |
+| <img src="app_screenshots/parent_categories.png.jpg" width="188" alt="Categories / Topics"> | <img src="app_screenshots/subcategories.png.jpg" width="188" alt="Topic Listing"> |
+
+| Project Details | Project List View |
+| --- | --- |
+| <img src="app_screenshots/project_detail_view.png.jpg" width="188" alt="Project Details"> | <img src="app_screenshots/project_list.png.jpg" width="188" alt="Project List"> |
+
+
 ## 📱 Overview
 
 TopicHub organizes technical learning content into categories and provides users with a structured way to browse topics and related project information.
