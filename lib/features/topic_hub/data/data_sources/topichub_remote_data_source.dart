@@ -49,6 +49,13 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       //bcz we already tested in main
       final List<dynamic> rawList = responseData as List<dynamic>;
 
+      // --- NEW FIX ADDED HERE ---
+      // If the backend returns ["No data Found"], safely return an empty list
+      if (rawList.isNotEmpty && rawList.first == "No data Found") {
+        return []; 
+      }
+      // --------------------------
+
       final List<ParentCategoryEntity> listParentCatrgories = rawList
           .map((json) => ParentCategoryModel.fromJson(json))
           .toList();
@@ -80,6 +87,13 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
 
       final List<dynamic> rawList = responseData as List<dynamic>;
 
+      // --- NEW FIX ADDED HERE ---
+      // If the backend returns ["No data Found"], safely return an empty list
+      if (rawList.isNotEmpty && rawList.first == "No data Found") {
+        return []; 
+      }
+      // --------------------------
+
       final List<SubCategoryEntity> subCategories = rawList.map((json) {
         print(
           '-__-__-__ SubCategory API sent map>id type > ${json['id'].runtimeType}',
@@ -109,6 +123,14 @@ class TopichubRemoteDataSourceImpl implements TopichubRemoteDataSource {
       print('projDet RDS >response is ->$response');
 
       final List<dynamic> rawList = response as List<dynamic>;
+
+      // --- NEW FIX ADDED HERE ---
+      // If the backend returns ["No data Found"], safely return an empty list
+      if (rawList.isNotEmpty && rawList.first == "No data Found") {
+        return []; 
+      }
+      // --------------------------
+      
       final List<ProjectListEntity> projectList = rawList
           .map((json) => ProjectListModel.fromJson(json))
           .toList();

@@ -82,7 +82,7 @@ class SubCategoriesView extends GetView<SubCategoriesController> {
 
               // STATE C: Empty
               if (controller.subCategories.isEmpty) {
-                return const Center(child: Text('No sub-categories found.'));
+                return const Center(child: Text('Coming soon . . .'));
               }
 
               // STATE D: Success

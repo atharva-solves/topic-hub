@@ -1,7 +1,6 @@
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:getx_memo_app/core/errors/app_exceptions.dart';
-import 'package:getx_memo_app/features/topic_hub/data/data_models/parent_category_model.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/entities/parent_category_entity.dart';
 import 'package:getx_memo_app/features/topic_hub/domain/usecases/get_parent_categories_usecase.dart';
 

@@ -1,4 +1,4 @@
-package com.example.getx_memo_app
+package com.trycatch.topichub
 
 import io.flutter.embedding.android.FlutterActivity
 

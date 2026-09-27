@@ -48,7 +48,7 @@ class ParentCategoriesView extends GetView<ParentCategoriesController> {
 
         // STATE C: Data is empty
         if (controller.parentCategories.isEmpty) {
-          return const Center(child: Text('No topics found.'));
+          return const Center(child: Text('Coming soon . . .'));
         }
 
         // STATE D: Success! Draw the UI

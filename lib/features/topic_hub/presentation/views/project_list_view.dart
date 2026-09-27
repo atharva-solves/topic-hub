@@ -78,7 +78,7 @@ class ProjectListView extends GetView<ProjectListController> {
 
               // State C: List returned empty from server
               if (controller.projectList.isEmpty) {
-                return const Center(child: Text('No projects found.'));
+                return const Center(child: Text('Coming soon . . .'));
               }
 
               // State D: Render list on success
